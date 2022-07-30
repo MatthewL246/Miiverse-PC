@@ -1,10 +1,10 @@
 {
-    "profiles": {
-        "Miiverse-PC (Package)": {
-            "commandName": "MsixPackage"
-        },
-        "Miiverse-PC (Unpackaged)": {
-            "commandName": "Project"
-        }
+  "profiles": {
+    "Miiverse-PC (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "Miiverse-PC (Unpackaged)": {
+      "commandName": "Project"
     }
+  }
 }

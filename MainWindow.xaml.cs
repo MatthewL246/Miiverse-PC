@@ -43,6 +43,17 @@ namespace Miiverse_PC
             addressBar.Text = sender.Source;
         }
 
+        /// <summary>
+        ///   Handles WebResourceRequested events for the Miiverse portal from
+        ///   the WebView.
+        /// </summary>
+        private void MiiverseWebResourceRequestedHandler(object sender, CoreWebView2WebResourceRequestedEventArgs e)
+        {
+            //e.Request.Headers.SetHeader("Host", "portal.olv.pretendo.cc");
+            e.Request.Headers.SetHeader("X-Nintendo-ServiceToken", "ServiceToken");
+            e.Request.Headers.SetHeader("X-Nintendo-ParamPack", "ParamPack");
+        }
+
         /// <summary>Navigates the WebView to a URI asynchronously.</summary>
         private async void NavigateToUriAsync(object sender, RoutedEventArgs e)
         {
@@ -82,7 +93,9 @@ namespace Miiverse_PC
         private async void SetupWebViewHandlersAsync(object sender, RoutedEventArgs e)
         {
             await webView.EnsureCoreWebView2Async();
+            webView.CoreWebView2.AddWebResourceRequestedFilter("*portal.olv.pretendo.cc*", CoreWebView2WebResourceContext.All);
             webView.CoreWebView2.HistoryChanged += HistoryChangedHandler;
+            webView.CoreWebView2.WebResourceRequested += MiiverseWebResourceRequestedHandler;
         }
     }
 }
