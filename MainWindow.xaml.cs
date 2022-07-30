@@ -1,7 +1,4 @@
-﻿// To learn more about WinUI, the WinUI project structure, and more about our
-// project templates, see: http://aka.ms/winui-project-info.
-
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Web.WebView2.Core;
 
@@ -11,15 +8,16 @@ namespace Miiverse_PC
     public sealed partial class MainWindow : Window
     {
         /// <summary>
-        ///   The main instance of the <see cref="MainWindow" /> class.
+        ///   Code that runs on initialization of the <see cref="MainWindow" />
+        ///   class.
         /// </summary>
         public MainWindow()
         {
             InitializeComponent();
             Title = "Miiverse PC Client";
 
-            // Await can not be used inside the constructor, so run an async
-            // setup method when the WebView2 loads
+            // Await can not be used inside the constructor, so run an
+            // asynchronous setup method when the WebView2 loads
             webView.Loaded += SetupWebViewHandlersAsync;
         }
 
@@ -83,7 +81,7 @@ namespace Miiverse_PC
         }
 
         /// <summary>
-        ///   Sets up the WebView event handlers asynchronously after load.
+        ///   Sets up the WebView event handlers asynchronously after it loads.
         /// </summary>
         private async void SetupWebViewHandlersAsync(object sender, RoutedEventArgs e)
         {
