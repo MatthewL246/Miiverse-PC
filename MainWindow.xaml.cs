@@ -15,10 +15,6 @@ namespace Miiverse_PC
         {
             InitializeComponent();
             Title = "Miiverse PC Client";
-
-            // Await can not be used inside the constructor, so run an
-            // asynchronous setup method when the WebView2 loads
-            webView.Loaded += SetupWebViewHandlersAsync;
         }
 
         /// <summary>Goes back in the WebView.</summary>
