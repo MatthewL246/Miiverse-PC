@@ -51,7 +51,9 @@ namespace Miiverse_PC
         /// <summary>
         ///   Creates a Pretendo account OAuth 2.0 access token asynchronously.
         /// </summary>
-        /// <returns>A Task tracking the status of the request</returns>
+        /// <returns>
+        ///   The task object representing the request operation.
+        /// </returns>
         public async Task CreateOauth2TokenAsync()
         {
             var requestValues = new Dictionary<string, string>
@@ -78,7 +80,7 @@ namespace Miiverse_PC
             var xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(xmlResponse);
             var tokenNode = xmlDocument.GetElementsByTagName("token");
-            OauthToken = tokenNode[0].InnerText;
+            OauthToken = tokenNode[0]?.InnerText;
         }
     }
 }
