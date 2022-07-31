@@ -82,5 +82,32 @@ namespace Miiverse_PC
             var tokenNode = xmlDocument.GetElementsByTagName("token");
             OauthToken = tokenNode[0]?.InnerText;
         }
+
+        /// <summary>
+        ///   Gets a Pretendo user's profile XML data asynchronously.
+        /// </summary>
+        /// <returns>
+        ///   A task object with a string containing the XML user profile data.
+        /// </returns>
+        public async Task<string> GetUserProfileXmlAsync()
+        {
+            if (OauthToken is null)
+            {
+                throw new Exception("OAuth token has not been generated yet.");
+            }
+            var request = new HttpRequestMessage(HttpMethod.Get, AccountServer + "/v1/api/people/@me/profile")
+            {
+                Headers =
+                {
+                    { "Host", "account.pretendo.cc" },
+                    { "Authorization", "Bearer " + OauthToken },
+                    { "X-Nintendo-Client-ID", clientId },
+                    { "X-Nintendo-Client-Secret", clientSecret }
+                }
+            };
+
+            var response = await client.SendAsync(request).ConfigureAwait(false);
+            return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        }
     }
 }
