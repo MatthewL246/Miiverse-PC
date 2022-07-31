@@ -65,11 +65,14 @@ namespace Miiverse_PC
         /// <returns>
         ///   A task object representing the request operation.
         /// </returns>
+        /// <exception cref="InvalidOperationException" />
+        /// <exception cref="HttpRequestException" />
+        /// <exception cref="XmlException" />
         public async Task CreateMiiverseTokenAsync()
         {
             if (OauthToken is null)
             {
-                throw new Exception("OAuth token has not been generated yet.");
+                throw new InvalidOperationException("The account OAuth 2.0 access token does not exist.");
             }
 
             var request = new HttpRequestMessage(HttpMethod.Get, AccountServer + "/v1/api/provider/service_token/@me")
@@ -98,6 +101,8 @@ namespace Miiverse_PC
         /// <returns>
         ///   The task object representing the request operation.
         /// </returns>
+        /// <exception cref="HttpRequestException" />
+        /// <exception cref="XmlException" />
         public async Task CreateOauth2TokenAsync()
         {
             var requestValues = new Dictionary<string, string>
@@ -133,11 +138,13 @@ namespace Miiverse_PC
         /// <returns>
         ///   A task object with a string containing the XML user profile data.
         /// </returns>
+        /// <exception cref="InvalidOperationException" />
+        /// <exception cref="HttpRequestException" />
         public async Task<string> GetUserProfileXmlAsync()
         {
             if (OauthToken is null)
             {
-                throw new Exception("OAuth token has not been generated yet.");
+                throw new InvalidOperationException("The account OAuth 2.0 access token does not exist.");
             }
             var request = new HttpRequestMessage(HttpMethod.Get, AccountServer + "/v1/api/people/@me/profile")
             {
