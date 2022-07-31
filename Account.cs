@@ -11,6 +11,11 @@ namespace Miiverse_PC
         /// <summary>The hard-coded client secret used by the Wii U.</summary>
         private const string clientSecret = "c91cdb5658bd4954ade78533a339cf9a";
 
+        /// <summary>
+        ///   The title ID of the Wii U Miiverse applet in the US.
+        /// </summary>
+        private const string miiverseTitleId = "000500301001610A";
+
         private static readonly HttpClient client = new();
 
         /// <summary>
@@ -35,6 +40,11 @@ namespace Miiverse_PC
         public string AccountServer { get; set; } = "https://account.pretendo.cc";
 
         /// <summary>
+        ///   The Miiverse service token returned by the account server.
+        /// </summary>
+        public string? MiiverseToken { get; private set; }
+
+        /// <summary>
         ///   The OAuth 2.0 access token returned by the account server.
         /// </summary>
         public string? OauthToken { get; private set; }
@@ -47,6 +57,40 @@ namespace Miiverse_PC
 
         /// <summary>The username of the PNID.</summary>
         public string PnidUsername { get; }
+
+        /// <summary>
+        ///   Creates a Pretendo account service token for the Miiverse title
+        ///   asynchronously using the previously-created OAuth access token.
+        /// </summary>
+        /// <returns>
+        ///   A task object representing the request operation.
+        /// </returns>
+        public async Task CreateMiiverseTokenAsync()
+        {
+            if (OauthToken is null)
+            {
+                throw new Exception("OAuth token has not been generated yet.");
+            }
+
+            var request = new HttpRequestMessage(HttpMethod.Get, AccountServer + "/v1/api/provider/service_token/@me")
+            {
+                Headers =
+                {
+                    { "Host", "account.pretendo.cc" },
+                    { "Authorization", "Bearer " + OauthToken },
+                    { "X-Nintendo-Client-ID", clientId },
+                    { "X-Nintendo-Client-Secret", clientSecret },
+                    { "X-Nintendo-Title-ID", miiverseTitleId }
+                }
+            };
+
+            var response = await client.SendAsync(request).ConfigureAwait(false);
+            string xmlResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var xmlDocument = new XmlDocument();
+            xmlDocument.LoadXml(xmlResponse);
+            var tokenNode = xmlDocument.GetElementsByTagName("token");
+            MiiverseToken = tokenNode[0]?.InnerText;
+        }
 
         /// <summary>
         ///   Creates a Pretendo account OAuth 2.0 access token asynchronously.
