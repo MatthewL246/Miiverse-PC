@@ -16,23 +16,14 @@ namespace Miiverse_PC
         /// <summary>
         ///   Initializes a new instance of the <see cref="Account" /> class.
         /// </summary>
-        /// <param name="accountServer">
-        ///   The account server: <see cref="AccountServer" />
-        /// </param>
         /// <param name="username">
         ///   The PNID's username: <see cref="PnidUsername" />
         /// </param>
         /// <param name="passwordHash">
         ///   The PNID's password hash: <see cref="PnidPasswordHash" />
         /// </param>
-        public Account(string accountServer, string username, string passwordHash)
+        public Account(string username, string passwordHash)
         {
-            if (!accountServer.StartsWith("http"))
-            {
-                // The account server address must start with "http(s)://"
-                accountServer = "https://" + accountServer;
-            }
-            AccountServer = accountServer;
             PnidUsername = username;
             PnidPasswordHash = passwordHash;
         }
@@ -41,7 +32,7 @@ namespace Miiverse_PC
         ///   The protocol and domain or IP address of the account server that
         ///   will be sent OAuth 2.0 login requests.
         /// </summary>
-        public string AccountServer { get; }
+        public string AccountServer { get; set; } = "https://account.pretendo.cc";
 
         /// <summary>
         ///   The OAuth 2.0 access token returned by the account server.
