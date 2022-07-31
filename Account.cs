@@ -40,6 +40,12 @@ namespace Miiverse_PC
         public string AccountServer { get; set; } = "https://account.pretendo.cc";
 
         /// <summary>
+        ///   The protocol and domain or IP address of the Miiverse discovery
+        ///   server, which responds with the Miiverse portal host.
+        /// </summary>
+        public string MiiverseDiscoveryServer { get; set; } = "https://discovery.olv.pretendo.cc";
+
+        /// <summary>
         ///   The Miiverse service token returned by the account server.
         /// </summary>
         public string? MiiverseToken { get; private set; }
@@ -130,6 +136,40 @@ namespace Miiverse_PC
             xmlDocument.LoadXml(xmlResponse);
             var tokenNode = xmlDocument.GetElementsByTagName("token");
             OauthToken = tokenNode[0]?.InnerText;
+        }
+
+        /// <summary>
+        ///   Gets the Miiverse portal host from the discovery server
+        ///   asynchronously.
+        /// </summary>
+        /// <returns>
+        ///   A task object containing the Miiverse portal host as a string.
+        /// </returns>
+        /// <exception cref="InvalidOperationException" />
+        /// <exception cref="HttpRequestException" />
+        /// <exception cref="XmlException" />
+        public async Task<string?> GetMiiversePortalHostAsync()
+        {
+            if (MiiverseToken is null)
+            {
+                throw new InvalidOperationException("The Miiverse service token does not exist.");
+            }
+
+            var request = new HttpRequestMessage(HttpMethod.Get, MiiverseDiscoveryServer + "/v1/endpoint")
+            {
+                Headers =
+                {
+                    {"Host", "discovery.olv.pretendo.cc" },
+                    {"X-Nintendo-ServiceToken", MiiverseToken }
+                }
+            };
+
+            var response = await client.SendAsync(request).ConfigureAwait(false);
+            string xmlResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var xmlDocument = new XmlDocument();
+            xmlDocument.LoadXml(xmlResponse);
+            var hostNode = xmlDocument.GetElementsByTagName("portal_host");
+            return hostNode[0]?.InnerText;
         }
 
         /// <summary>
