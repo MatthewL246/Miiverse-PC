@@ -70,14 +70,7 @@ namespace Miiverse_PC
             }
             catch (FormatException)
             {
-                ContentDialog errorDialog = new()
-                {
-                    Title = "Invalid URL",
-                    Content = "The URL you entered was not valid: " + uri,
-                    CloseButtonText = "Close",
-                    XamlRoot = Content.XamlRoot
-                };
-                _ = await errorDialog.ShowAsync();
+                await ShowErrorDialogAsync("Invalid URL", "The URL you entered was not valid: " + uri);
             }
         }
 
@@ -96,6 +89,22 @@ namespace Miiverse_PC
             webView.CoreWebView2.AddWebResourceRequestedFilter("*portal.olv.pretendo.cc*", CoreWebView2WebResourceContext.All);
             webView.CoreWebView2.HistoryChanged += HistoryChangedHandler;
             webView.CoreWebView2.WebResourceRequested += MiiverseWebResourceRequestedHandler;
+        }
+
+        /// <summary>Shows an error dialog over the window.</summary>
+        /// <param name="title">The error dialog's title.</param>
+        /// <param name="message">The error dialog's body.</param>
+        /// <returns>A Task object.</returns>
+        private async Task ShowErrorDialogAsync(string title, string message)
+        {
+            ContentDialog errorDialog = new()
+            {
+                Title = title,
+                Content = message,
+                CloseButtonText = "Close",
+                XamlRoot = Content.XamlRoot
+            };
+            _ = await errorDialog.ShowAsync().AsTask().ConfigureAwait(false);
         }
     }
 }
