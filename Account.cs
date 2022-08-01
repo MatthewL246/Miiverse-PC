@@ -46,6 +46,11 @@ namespace Miiverse_PC
         public string MiiverseDiscoveryServer { get; set; } = "https://discovery.olv.pretendo.cc";
 
         /// <summary>
+        ///   The Miiverse Wii U portal host sent by the discovery server.
+        /// </summary>
+        public string? MiiversePortalHost { get; private set; }
+
+        /// <summary>
         ///   The Miiverse service token returned by the account server.
         /// </summary>
         public string? MiiverseToken { get; private set; }
@@ -69,12 +74,12 @@ namespace Miiverse_PC
         ///   asynchronously using the previously-created OAuth access token.
         /// </summary>
         /// <returns>
-        ///   A task object representing the request operation.
+        ///   A task object with a string containing the server's XML response.
         /// </returns>
         /// <exception cref="InvalidOperationException" />
         /// <exception cref="HttpRequestException" />
         /// <exception cref="XmlException" />
-        public async Task CreateMiiverseTokenAsync()
+        public async Task<string> CreateMiiverseTokenAsync()
         {
             if (OauthToken is null)
             {
@@ -99,17 +104,19 @@ namespace Miiverse_PC
             xmlDocument.LoadXml(xmlResponse);
             var tokenNode = xmlDocument.GetElementsByTagName("token");
             MiiverseToken = tokenNode[0]?.InnerText;
+
+            return $"Miiverse service token request: error code {response.StatusCode}\n{xmlResponse}";
         }
 
         /// <summary>
         ///   Creates a Pretendo account OAuth 2.0 access token asynchronously.
         /// </summary>
         /// <returns>
-        ///   The task object representing the request operation.
+        ///   A task object with a string containing the server's XML response.
         /// </returns>
         /// <exception cref="HttpRequestException" />
         /// <exception cref="XmlException" />
-        public async Task CreateOauth2TokenAsync()
+        public async Task<string> CreateOauth2TokenAsync()
         {
             var requestValues = new Dictionary<string, string>
             {
@@ -136,6 +143,8 @@ namespace Miiverse_PC
             xmlDocument.LoadXml(xmlResponse);
             var tokenNode = xmlDocument.GetElementsByTagName("token");
             OauthToken = tokenNode[0]?.InnerText;
+
+            return $"Account access token request: error code {response.StatusCode}\n{xmlResponse}";
         }
 
         /// <summary>
@@ -143,12 +152,12 @@ namespace Miiverse_PC
         ///   asynchronously.
         /// </summary>
         /// <returns>
-        ///   A task object containing the Miiverse portal host as a string.
+        ///   A task object with a string containing the server's XML response.
         /// </returns>
         /// <exception cref="InvalidOperationException" />
         /// <exception cref="HttpRequestException" />
         /// <exception cref="XmlException" />
-        public async Task<string?> GetMiiversePortalHostAsync()
+        public async Task<string> GetMiiversePortalHostAsync()
         {
             if (MiiverseToken is null)
             {
@@ -169,7 +178,9 @@ namespace Miiverse_PC
             var xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(xmlResponse);
             var hostNode = xmlDocument.GetElementsByTagName("portal_host");
-            return hostNode[0]?.InnerText;
+            MiiversePortalHost = hostNode[0]?.InnerText;
+
+            return $"Miiverse discovery request: error code {response.StatusCode}\n{xmlResponse}";
         }
 
         /// <summary>
