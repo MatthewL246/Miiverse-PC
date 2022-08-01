@@ -1,4 +1,5 @@
-﻿using System.Xml;
+﻿using System.Net;
+using System.Xml;
 
 namespace Miiverse_PC
 {
@@ -74,7 +75,8 @@ namespace Miiverse_PC
         ///   asynchronously using the previously-created OAuth access token.
         /// </summary>
         /// <returns>
-        ///   A task object with a string containing the server's XML response.
+        ///   A task object representing a string with a formatted error message
+        ///   based on the server response.
         /// </returns>
         /// <exception cref="InvalidOperationException" />
         /// <exception cref="HttpRequestException" />
@@ -102,17 +104,17 @@ namespace Miiverse_PC
             string xmlResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             var xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(xmlResponse);
-            var tokenNode = xmlDocument.GetElementsByTagName("token");
-            MiiverseToken = tokenNode[0]?.InnerText;
+            MiiverseToken = xmlDocument.GetElementsByTagName("token")[0]?.InnerText;
 
-            return $"Miiverse service token request: error code {response.StatusCode}\n{xmlResponse}";
+            return GenerateErrorMessage("Miiverse service token creation", response.StatusCode, xmlDocument);
         }
 
         /// <summary>
         ///   Creates a Pretendo account OAuth 2.0 access token asynchronously.
         /// </summary>
         /// <returns>
-        ///   A task object with a string containing the server's XML response.
+        ///   A task object representing a string with a formatted error message
+        ///   based on the server response.
         /// </returns>
         /// <exception cref="HttpRequestException" />
         /// <exception cref="XmlException" />
@@ -141,10 +143,9 @@ namespace Miiverse_PC
             string xmlResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             var xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(xmlResponse);
-            var tokenNode = xmlDocument.GetElementsByTagName("token");
-            OauthToken = tokenNode[0]?.InnerText;
+            OauthToken = xmlDocument.GetElementsByTagName("token")[0]?.InnerText;
 
-            return $"Account access token request: error code {response.StatusCode}\n{xmlResponse}";
+            return GenerateErrorMessage("account access token creation", response.StatusCode, xmlDocument);
         }
 
         /// <summary>
@@ -152,7 +153,8 @@ namespace Miiverse_PC
         ///   asynchronously.
         /// </summary>
         /// <returns>
-        ///   A task object with a string containing the server's XML response.
+        ///   A task object representing a string with a formatted error message
+        ///   based on the server response.
         /// </returns>
         /// <exception cref="InvalidOperationException" />
         /// <exception cref="HttpRequestException" />
@@ -177,10 +179,9 @@ namespace Miiverse_PC
             string xmlResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             var xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(xmlResponse);
-            var hostNode = xmlDocument.GetElementsByTagName("portal_host");
-            MiiversePortalHost = hostNode[0]?.InnerText;
+            MiiversePortalHost = xmlDocument.GetElementsByTagName("portal_host")[0]?.InnerText;
 
-            return $"Miiverse discovery request: error code {response.StatusCode}\n{xmlResponse}";
+            return GenerateErrorMessage("Miiverse portal discovery", response.StatusCode, xmlDocument);
         }
 
         /// <summary>
@@ -210,6 +211,28 @@ namespace Miiverse_PC
 
             var response = await client.SendAsync(request).ConfigureAwait(false);
             return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>Generates a nicely-formatted error message.</summary>
+        /// <param name="requestName">
+        ///   The name of the request that is shown in the error message.
+        /// </param>
+        /// <param name="httpStatus">
+        ///   The HTTP status code of the request.
+        /// </param>
+        /// <param name="responseXmlDocument">
+        ///   The XML document of the error response.
+        /// </param>
+        /// <returns>A formatted error message string.</returns>
+        private static string GenerateErrorMessage(string requestName, HttpStatusCode httpStatus, XmlDocument responseXmlDocument)
+        {
+            string? errorCode = responseXmlDocument.GetElementsByTagName("code")[0]?.InnerText;
+            string? errorMessage = responseXmlDocument.GetElementsByTagName("message")[0]?.InnerText;
+
+            return $"Error in the {requestName} request.\n" +
+                $"HTTP error code: {(int)httpStatus} {httpStatus}\n" +
+                $"Server error code: {errorCode}\n" +
+                $"Server error message: {errorMessage}";
         }
     }
 }
