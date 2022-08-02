@@ -7,6 +7,9 @@ namespace Miiverse_PC
     /// <summary>The main window of the app.</summary>
     public sealed partial class MainWindow : Window
     {
+        /// <summary>The currently logged-in account.</summary>
+        private Account? currentAccount;
+
         /// <summary>
         ///   Code that runs on initialization of the <see cref="MainWindow" />
         ///   class.
@@ -41,6 +44,80 @@ namespace Miiverse_PC
             backButton.IsEnabled = sender.CanGoBack;
             forwardButton.IsEnabled = sender.CanGoForward;
             addressBar.Text = sender.Source;
+        }
+
+        /// <summary>
+        ///   Logs in as a PNID with a username and password hash.
+        /// </summary>
+        private async void LoginAsync(object sender, RoutedEventArgs e)
+        {
+            if (username.Text is null || passwordHash.Password is null)
+            {
+                await ShowErrorDialogAsync
+                (
+                    "Username or password is empty",
+                    "Please fill out both the username and password hash text boxes."
+                ).ConfigureAwait(false);
+                return;
+            }
+            if (passwordHash.Password.Length != 64)
+            {
+                await ShowErrorDialogAsync
+                (
+                    "Invalid password hash",
+                    "The password hash is not the correct length. Make sure to only copy and paste the 64-character hash."
+                ).ConfigureAwait(false);
+                return;
+            }
+
+            string currentStatus;
+            UpdateLoginStatus(true);
+            currentAccount = new(username.Text, passwordHash.Password)
+            {
+                AccountServer = "http://account.pretendo.cc",
+                MiiverseDiscoveryServer = "http://discovery.olv.pretendo.cc"
+            };
+
+            try
+            {
+                currentStatus = await currentAccount.CreateOauth2TokenAsync();
+                if (currentAccount.OauthToken is null)
+                {
+                    await ShowErrorDialogAsync("Login failed", currentStatus);
+                    UpdateLoginStatus();
+                    return;
+                }
+                currentStatus = await currentAccount.CreateMiiverseTokenAsync();
+                if (currentAccount.MiiverseToken is null)
+                {
+                    await ShowErrorDialogAsync("Login failed", currentStatus);
+                    UpdateLoginStatus();
+                    return;
+                }
+                currentStatus = await currentAccount.GetMiiversePortalHostAsync();
+                if (currentAccount.MiiversePortalHost is null)
+                {
+                    await ShowErrorDialogAsync("Login failed", currentStatus);
+                    UpdateLoginStatus();
+                    return;
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                await ShowErrorDialogAsync("Login failed (network error)", "The login failed because of a network error: " + ex.Message);
+            }
+            catch (System.Xml.XmlException ex)
+            {
+                await ShowErrorDialogAsync("Login failed (parse error)", "The login failed because the account server's response could not be parsed: " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                await ShowErrorDialogAsync("Login failed (unknown error)", "The login failed because of an unknown error: " + ex.Message);
+            }
+            finally
+            {
+                UpdateLoginStatus();
+            }
         }
 
         /// <summary>
@@ -105,6 +182,29 @@ namespace Miiverse_PC
                 XamlRoot = Content.XamlRoot
             };
             _ = await errorDialog.ShowAsync().AsTask().ConfigureAwait(false);
+        }
+
+        /// <summary>Updates the login status text and button.</summary>
+        /// <param name="isLoggingIn">
+        ///   Whether an account is currently being logged in to (if true,
+        ///   disables the login button).
+        /// </param>
+        private void UpdateLoginStatus(bool isLoggingIn = false)
+        {
+            if (isLoggingIn)
+            {
+                loginStatus.Text = "Logging in...";
+                loginButton.IsEnabled = false;
+            }
+            else
+            {
+                loginStatus.Text = currentAccount is null
+                    || currentAccount.OauthToken is null
+                    || currentAccount.MiiverseToken is null
+                    ? "Not logged in"
+                    : $"Logged in: {currentAccount.PnidUsername}";
+                loginButton.IsEnabled = true;
+            }
         }
     }
 }
