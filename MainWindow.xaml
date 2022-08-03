@@ -18,14 +18,25 @@
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
 
-        <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="5" Orientation="Horizontal">
-            <TextBlock x:Name="loginStatus" Padding="4" FontSize="18" Text="Not logged in" />
-            <TextBox x:Name="username" Width="400" PlaceholderText="Enter PNID username here" />
-            <PasswordBox x:Name="passwordHash" Width="400" PlaceholderText="Paste PNID password hash here" />
-            <Button x:Name="loginButton" Click="LoginAsync">
+        <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock x:Name="loginStatus" Grid.Row="0" Grid.Column="0" Padding="4" HorizontalAlignment="Center" VerticalAlignment="Center"
+                FontSize="18" Text="Not logged in" />
+            <TextBox x:Name="username" Grid.Row="0" Grid.Column="1" Width="400" PlaceholderText="Enter PNID username here" />
+            <PasswordBox x:Name="passwordHash" Grid.Row="0" Grid.Column="2" Width="400" PlaceholderText="Paste PNID password hash here" />
+            <Button x:Name="loginButton" Grid.Row="0" Grid.Column="3" Click="LoginAsync">
                 Login
             </Button>
-        </StackPanel>
+        </Grid>
 
         <Button x:Name="backButton" Grid.Row="1" Grid.Column="0" Click="GoBack" IsEnabled="false">
             Back
