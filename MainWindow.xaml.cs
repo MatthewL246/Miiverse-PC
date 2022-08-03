@@ -118,6 +118,21 @@ namespace Miiverse_PC
             {
                 UpdateLoginStatus();
             }
+
+            if (currentAccount.IsSignedIn)
+            {
+                webView.CoreWebView2.AddWebResourceRequestedFilter($"{currentAccount.MiiversePortalServer}/*", CoreWebView2WebResourceContext.All);
+                try
+                {
+                    // The Miiverse portal server cannot be null due to
+                    // Account.IsSignedIn being true
+                    webView.Source = new(currentAccount.MiiversePortalServer!);
+                }
+                catch (FormatException)
+                {
+                    await ShowErrorDialogAsync("Invalid Miiverse portal host", $"The Miiverse portal host (${currentAccount.MiiversePortalServer}) is not a valid URL.");
+                }
+            }
         }
 
         /// <summary>
@@ -126,9 +141,11 @@ namespace Miiverse_PC
         /// </summary>
         private void MiiverseWebResourceRequestedHandler(object sender, CoreWebView2WebResourceRequestedEventArgs e)
         {
-            //e.Request.Headers.SetHeader("Host", "portal.olv.pretendo.cc");
-            e.Request.Headers.SetHeader("X-Nintendo-ServiceToken", "ServiceToken");
-            e.Request.Headers.SetHeader("X-Nintendo-ParamPack", "ParamPack");
+            if (currentAccount is not null && currentAccount.IsSignedIn)
+            {
+                e.Request.Headers.SetHeader("X-Nintendo-ServiceToken", currentAccount.MiiverseToken);
+                e.Request.Headers.SetHeader("X-Nintendo-ParamPack", null);
+            }
         }
 
         /// <summary>Navigates the WebView to a URI asynchronously.</summary>
@@ -163,7 +180,6 @@ namespace Miiverse_PC
         private async void SetupWebViewHandlersAsync(object sender, RoutedEventArgs e)
         {
             await webView.EnsureCoreWebView2Async();
-            webView.CoreWebView2.AddWebResourceRequestedFilter("*portal.olv.pretendo.cc*", CoreWebView2WebResourceContext.All);
             webView.CoreWebView2.HistoryChanged += HistoryChangedHandler;
             webView.CoreWebView2.WebResourceRequested += MiiverseWebResourceRequestedHandler;
         }
