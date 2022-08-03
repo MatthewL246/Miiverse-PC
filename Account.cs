@@ -41,6 +41,12 @@ namespace Miiverse_PC
         public string AccountServer { get; set; } = "https://account.pretendo.cc";
 
         /// <summary>
+        ///   Is true if account access token, Miiverse service token, and
+        ///   Miiverse portal host are all not null. Is false otherwise.
+        /// </summary>
+        public bool IsSignedIn => !(OauthToken is null || MiiverseToken is null || MiiversePortalHost is null);
+
+        /// <summary>
         ///   The protocol and domain or IP address of the Miiverse discovery
         ///   server, which responds with the Miiverse portal host.
         /// </summary>

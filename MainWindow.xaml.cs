@@ -199,8 +199,7 @@ namespace Miiverse_PC
             else
             {
                 loginArea.Header = currentAccount is null
-                    || currentAccount.OauthToken is null
-                    || currentAccount.MiiverseToken is null
+                    || !currentAccount.IsSignedIn
                     ? "Login status: Not logged in"
                     : $"Login status: Logged in as \"{currentAccount.PnidUsername}\"";
                 loginButton.IsEnabled = true;
