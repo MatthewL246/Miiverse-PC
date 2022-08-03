@@ -18,25 +18,16 @@
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
 
-        <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="5">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <TextBlock x:Name="loginStatus" Grid.Row="0" Grid.Column="0" Padding="4" HorizontalAlignment="Center" VerticalAlignment="Center"
-                FontSize="18" Text="Not logged in" />
-            <TextBox x:Name="username" Grid.Row="0" Grid.Column="1" Width="400" PlaceholderText="Enter PNID username here" />
-            <PasswordBox x:Name="passwordHash" Grid.Row="0" Grid.Column="2" Width="400" PlaceholderText="Paste PNID password hash here" />
-            <Button x:Name="loginButton" Grid.Row="0" Grid.Column="3" Click="LoginAsync">
-                Login
-            </Button>
-        </Grid>
+        <Expander x:Name="loginArea" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="5" Margin="8" HorizontalAlignment="Stretch"
+            Header="Login status: Not logged in (click to expand)">
+            <StackPanel Orientation="Horizontal">
+                <TextBox x:Name="username" Width="200" PlaceholderText="Enter PNID username here" />
+                <PasswordBox x:Name="passwordHash" Width="400" PlaceholderText="Paste PNID password hash here" />
+                <Button x:Name="loginButton" Click="LoginAsync">
+                    Login
+                </Button>
+            </StackPanel>
+        </Expander>
 
         <Button x:Name="backButton" Grid.Row="1" Grid.Column="0" Click="GoBack" IsEnabled="false">
             Back
