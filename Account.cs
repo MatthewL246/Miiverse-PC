@@ -44,7 +44,7 @@ namespace Miiverse_PC
         ///   Is true if account access token, Miiverse service token, and
         ///   Miiverse portal host are all not null. Is false otherwise.
         /// </summary>
-        public bool IsSignedIn => !(OauthToken is null || MiiverseToken is null || MiiversePortalHost is null);
+        public bool IsSignedIn => !(OauthToken is null || MiiverseToken is null || MiiversePortalServer is null);
 
         /// <summary>
         ///   The protocol and domain or IP address of the Miiverse discovery
@@ -55,7 +55,7 @@ namespace Miiverse_PC
         /// <summary>
         ///   The Miiverse Wii U portal host sent by the discovery server.
         /// </summary>
-        public string? MiiversePortalHost { get; private set; }
+        public string? MiiversePortalServer { get; set; }
 
         /// <summary>
         ///   The Miiverse service token returned by the account server.
@@ -155,7 +155,7 @@ namespace Miiverse_PC
         }
 
         /// <summary>
-        ///   Gets the Miiverse portal host from the discovery server
+        ///   Gets the Miiverse portal server from the discovery server
         ///   asynchronously.
         /// </summary>
         /// <returns>
@@ -165,7 +165,7 @@ namespace Miiverse_PC
         /// <exception cref="InvalidOperationException" />
         /// <exception cref="HttpRequestException" />
         /// <exception cref="XmlException" />
-        public async Task<string> GetMiiversePortalHostAsync()
+        public async Task<string> GetMiiversePortalServerAsync()
         {
             if (MiiverseToken is null)
             {
@@ -185,7 +185,7 @@ namespace Miiverse_PC
             string xmlResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             var xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(xmlResponse);
-            MiiversePortalHost = xmlDocument.GetElementsByTagName("portal_host")[0]?.InnerText;
+            MiiversePortalServer = "https://" + xmlDocument.GetElementsByTagName("portal_host")[0]?.InnerText;
 
             return GenerateErrorMessage("Miiverse portal discovery", response.StatusCode, xmlDocument);
         }

@@ -94,8 +94,8 @@ namespace Miiverse_PC
                     UpdateLoginStatus();
                     return;
                 }
-                currentStatus = await currentAccount.GetMiiversePortalHostAsync();
-                if (currentAccount.MiiversePortalHost is null)
+                currentStatus = await currentAccount.GetMiiversePortalServerAsync();
+                if (currentAccount.MiiversePortalServer is null)
                 {
                     await ShowErrorDialogAsync("Login failed", currentStatus);
                     UpdateLoginStatus();
