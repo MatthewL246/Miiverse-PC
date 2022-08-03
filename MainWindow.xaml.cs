@@ -51,7 +51,7 @@ namespace Miiverse_PC
         /// </summary>
         private async void LoginAsync(object sender, RoutedEventArgs e)
         {
-            if (username.Text is null || passwordHash.Password is null)
+            if (string.IsNullOrEmpty(username.Text) || string.IsNullOrEmpty(passwordHash.Password))
             {
                 await ShowErrorDialogAsync
                 (
