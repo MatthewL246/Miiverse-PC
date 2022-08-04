@@ -294,8 +294,20 @@
     {
         Japan = 0,
 
-        UnitedStates = 2,
+        America = 2,
 
         Europe = 4
+    }
+
+    /// <summary>The Wii U Menu title IDs for all regions.</summary>
+    internal enum TitleId : ulong
+    {
+        JapanMenu = 0x0005001010040000,
+
+        AmericaMenu = 0x0005001010040100,
+
+        EuropeMenu = 0x0005001010040200,
+
+        Unknown = 0xFFFFFFFFFFFFFFFF
     }
 }
