@@ -101,6 +101,7 @@ namespace Miiverse_PC
                     UpdateLoginStatus();
                     return;
                 }
+                currentAccount.CreateParamPack(LanguageId.English, CountryId.UnitedStates, PlatformId.WiiU);
             }
             catch (HttpRequestException ex)
             {
@@ -144,7 +145,7 @@ namespace Miiverse_PC
             if (currentAccount is not null && currentAccount.IsSignedIn)
             {
                 e.Request.Headers.SetHeader("X-Nintendo-ServiceToken", currentAccount.MiiverseToken);
-                e.Request.Headers.SetHeader("X-Nintendo-ParamPack", null);
+                e.Request.Headers.SetHeader("X-Nintendo-ParamPack", currentAccount.ParamPackData);
             }
         }
 
