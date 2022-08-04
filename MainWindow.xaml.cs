@@ -18,6 +18,12 @@ namespace Miiverse_PC
         {
             InitializeComponent();
             Title = "Miiverse PC Client";
+
+            // Set up combo box bindings
+            languageBox.ItemsSource = Enum.GetValues(typeof(LanguageId));
+            languageBox.SelectedItem = LanguageId.English;
+            countryBox.ItemsSource = Enum.GetValues(typeof(CountryId));
+            countryBox.SelectedItem = CountryId.UnitedStates;
         }
 
         /// <summary>Goes back in the WebView.</summary>
@@ -101,7 +107,7 @@ namespace Miiverse_PC
                     UpdateLoginStatus();
                     return;
                 }
-                currentAccount.CreateParamPack(LanguageId.English, CountryId.UnitedStates, PlatformId.WiiU);
+                currentAccount.CreateParamPack((LanguageId)languageBox.SelectedItem, (CountryId)countryBox.SelectedItem, PlatformId.WiiU);
             }
             catch (HttpRequestException ex)
             {
