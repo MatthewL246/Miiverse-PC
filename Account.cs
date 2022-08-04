@@ -69,8 +69,7 @@ namespace Miiverse_PC
         public string? OauthToken { get; private set; }
 
         /// <summary>
-        ///   The data used to create the X-Nintendo-ParamPack header (raw data
-        ///   that must be base64-encoded).
+        ///   The data used in the X-Nintendo-ParamPack header (base64-encoded).
         /// </summary>
         public string? ParamPackData { get; private set; }
 
@@ -218,7 +217,8 @@ namespace Miiverse_PC
                 paramPackBuilder.Append(item.Key).Append('\\').Append(item.Value).Append('\\');
             }
 
-            ParamPackData = paramPackBuilder.ToString();
+            byte[] paramPackBytes = Encoding.UTF8.GetBytes(paramPackBuilder.ToString());
+            ParamPackData = Convert.ToBase64String(paramPackBytes);
         }
 
         /// <summary>
