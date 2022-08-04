@@ -284,7 +284,7 @@
     /// <summary>The platform IDs of consoles.</summary>
     internal enum PlatformId
     {
-        3DS,
+        ThreeDS,
 
         WiiU
     }
