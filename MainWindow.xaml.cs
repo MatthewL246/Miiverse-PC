@@ -1,6 +1,7 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Web.WebView2.Core;
+using Windows.Storage;
 
 namespace Miiverse_PC
 {
@@ -39,6 +40,40 @@ namespace Miiverse_PC
                 normalizedServer = "http://" + server;
             }
             return normalizedServer;
+        }
+
+        /// <summary>
+        ///   Downloads the current account's profile data asynchronously and
+        ///   prompts the user to save it.
+        /// </summary>
+        private async void DownloadUserProfileDataAsync(object sender, RoutedEventArgs e)
+        {
+            if (currentAccount is null || !currentAccount.IsSignedIn)
+            {
+                await ShowErrorDialogAsync("Not signed in", "You must be signed in to download user profile data.");
+                return;
+            }
+
+            var savePicker = new Windows.Storage.Pickers.FileSavePicker
+            {
+                SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.Downloads,
+                SuggestedFileName = "ProfileData"
+            };
+            savePicker.FileTypeChoices.Add("XML data", new List<string>() { ".xml" });
+
+            // Create a new window handle and initialize the file picker with
+            // it. This prevents the file picker from throwing a COM exception
+            var window = new Window();
+            var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
+            WinRT.Interop.InitializeWithWindow.Initialize(savePicker, hwnd);
+
+            StorageFile dataFile = await savePicker.PickSaveFileAsync();
+
+            if (dataFile is not null)
+            {
+                string profileData = await currentAccount.GetUserProfileXmlAsync();
+                await FileIO.WriteTextAsync(dataFile, profileData);
+            }
         }
 
         /// <summary>Goes back in the WebView.</summary>
@@ -138,13 +173,13 @@ namespace Miiverse_PC
                 {
                     // Only get the Miiverse portal server if it has not already
                     // been set by the UI
-                currentStatus = await currentAccount.GetMiiversePortalServerAsync();
-                if (currentAccount.MiiversePortalServer is null)
-                {
-                    await ShowErrorDialogAsync("Login failed", currentStatus);
-                    UpdateLoginStatus();
-                    return;
-                }
+                    currentStatus = await currentAccount.GetMiiversePortalServerAsync();
+                    if (currentAccount.MiiversePortalServer is null)
+                    {
+                        await ShowErrorDialogAsync("Login failed", currentStatus);
+                        UpdateLoginStatus();
+                        return;
+                    }
                 }
                 currentAccount.CreateParamPack((LanguageId)languageBox.SelectedItem, (CountryId)countryBox.SelectedItem, PlatformId.WiiU);
             }
