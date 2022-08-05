@@ -49,11 +49,10 @@
                     ToolTipService.ToolTip="These options control what Pretendo server to connect to. By default, Pretendo's official servers are used, and the portal host is downloaded from the discovery server. If only the account server is specified, the account server is also used as the discovery server. Specifying an alternate portal host skips using the discovery server.">
                     Server options:
                 </TextBlock>
-                <TextBox x:Name="accountServerText" Grid.Row="1" Grid.Column="1" MaxWidth="200" Margin="8" PlaceholderText="Account server" />
-                <TextBox x:Name="discoveryServerText" Grid.Row="1" Grid.Column="2" MaxWidth="200" Margin="8"
+                <TextBox x:Name="accountServer" Grid.Row="1" Grid.Column="1" MaxWidth="200" Margin="8" PlaceholderText="Account server" />
+                <TextBox x:Name="discoveryServer" Grid.Row="1" Grid.Column="2" MaxWidth="200" Margin="8"
                     PlaceholderText="Miiverse discovery server" />
-                <TextBox x:Name="portalServerText" Grid.Row="1" Grid.Column="3" MaxWidth="200" Margin="8"
-                    PlaceholderText="Miiverse portal server" />
+                <TextBox x:Name="portalServer" Grid.Row="1" Grid.Column="3" MaxWidth="200" Margin="8" PlaceholderText="Miiverse portal server" />
                 <Button x:Name="downloadButton" Grid.Row="1" Grid.Column="4" Margin="8" Click="DownloadUserProfileDataAsync">
                     Download user profile data
                 </Button>
