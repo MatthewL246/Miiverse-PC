@@ -24,11 +24,11 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
                     <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="2*" />
-                    <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
@@ -38,25 +38,32 @@
                     Login information:
                 </TextBlock>
                 <TextBox x:Name="username" Grid.Row="0" Grid.Column="1" MaxWidth="200" Margin="8" PlaceholderText="Enter PNID username here" />
-                <PasswordBox x:Name="passwordHash" Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="3" MaxWidth="400" Margin="8"
+                <PasswordBox x:Name="passwordHash" Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" MaxWidth="400" Margin="8"
                     PlaceholderText="Paste PNID password hash here" />
-                <Button x:Name="loginButton" Grid.Row="0" Grid.Column="5" Margin="8" Click="LoginAsync">
+                <Button x:Name="loginButton" Grid.Row="0" Grid.Column="4" Margin="8" Click="LoginAsync">
                     Login
                 </Button>
 
-                <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" FontSize="16" FontWeight="Bold"
+                <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" FontSize="16" FontWeight="Bold">
+                    Server options:
+                </TextBlock>
+                <TextBox x:Name="accountServerText" Grid.Row="1" Grid.Column="1" MaxWidth="200" Margin="8" PlaceholderText="Account server" />
+                <TextBox x:Name="discoveryServerText" Grid.Row="1" Grid.Column="2" MaxWidth="200" Margin="8"
+                    PlaceholderText="Miiverse discovery server" />
+                <TextBox x:Name="portalServerText" Grid.Row="1" Grid.Column="3" MaxWidth="200" Margin="8"
+                    PlaceholderText="Miiverse portal server" />
+                <Button x:Name="downloadButton" Grid.Row="1" Grid.Column="4" Margin="8" Click="DownloadUserProfileDataAsync">
+                    Download user profile data
+                </Button>
+
+                <TextBlock Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" FontSize="16" FontWeight="Bold"
                     ToolTipService.ToolTip="Important note: the language and country options do not currently have any effect besides setting a value in the database. However, Juxt will most likely use these values for localization in the future.">
                     Login options:<LineBreak />
                     (Hover for info)</TextBlock>
-                <ComboBox x:Name="languageBox" Grid.Row="1" Grid.Column="1" Margin="8" Header="Miiverse language" Text="Select language" />
-                <ComboBox x:Name="countryBox" Grid.Row="1" Grid.Column="2" Margin="8" Header="Console country" Text="Select country" />
-                <RadioButton x:Name="wiiuButton" Grid.Row="1" Grid.Column="3" Content="Wii U" GroupName="Consoles" IsChecked="true" />
-                <RadioButton x:Name="threeDsButton" Grid.Row="1" Grid.Column="4" Content="3DS" GroupName="Consoles" />
-                <Button x:Name="downloadButton" Grid.Row="1" Grid.Column="5" Margin="8">
-                    <TextBlock>
-                        Download user<LineBreak />
-                        profile data</TextBlock>
-                </Button>
+                <ComboBox x:Name="languageBox" Grid.Row="2" Grid.Column="1" Margin="8" Header="Miiverse language" Text="Select language" />
+                <ComboBox x:Name="countryBox" Grid.Row="2" Grid.Column="2" Margin="8" Header="Console country" Text="Select country" />
+                <RadioButton x:Name="wiiuButton" Grid.Row="2" Grid.Column="3" Content="Wii U" GroupName="Consoles" IsChecked="true" />
+                <RadioButton x:Name="threeDsButton" Grid.Row="2" Grid.Column="4" Content="3DS" GroupName="Consoles" />
             </Grid>
         </Expander>
 
