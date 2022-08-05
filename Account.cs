@@ -190,15 +190,33 @@ namespace Miiverse_PC
                 throw new InvalidOperationException("Invalid country ID");
             }
 
-            titleId = platformId == PlatformId.WiiU
-                ? regionId == RegionId.Japan
-                    ? TitleId.JapanMenu
-                    : regionId == RegionId.America
-                        ? TitleId.AmericaMenu
-                        : regionId == RegionId.Europe
-                            ? TitleId.EuropeMenu
-                            : TitleId.Unknown
-                : TitleId.Unknown;
+            if (platformId == PlatformId.WiiU)
+            {
+                if (regionId == RegionId.Japan)
+                {
+                    // Japanese console
+                    titleId = TitleId.JapanMenu;
+                }
+                else if (regionId == RegionId.America)
+                {
+                    // American console
+                    titleId = TitleId.AmericaMenu;
+                }
+                else if (regionId == RegionId.Europe)
+                {
+                    // European console
+                    titleId = TitleId.EuropeMenu;
+                }
+                else
+                {
+                    titleId = TitleId.Unknown;
+                }
+            }
+            else
+            {
+                // 3DS seems to always send a title ID of 0xFFFFFFFFFFFFFFFF
+                titleId = TitleId.Unknown;
+            }
 
             var paramPackValues = new Dictionary<string, string>
             {
