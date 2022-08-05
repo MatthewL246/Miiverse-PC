@@ -78,11 +78,34 @@ namespace Miiverse_PC
 
             string currentStatus;
             UpdateLoginStatus(true);
-            currentAccount = new(username.Text, passwordHash.Password)
+            currentAccount = new(username.Text, passwordHash.Password);
+
+            if (!string.IsNullOrEmpty(accountServer.Text))
             {
-                AccountServer = "http://account.pretendo.cc",
-                MiiverseDiscoveryServer = "http://discovery.olv.pretendo.cc"
-            };
+                if (!accountServer.Text.StartsWith("http"))
+                {
+                    accountServer.Text = "http://" + accountServer.Text;
+                }
+                currentAccount.AccountServer = accountServer.Text;
+
+                if (string.IsNullOrEmpty(discoveryServer.Text))
+                {
+                    discoveryServer.Text = accountServer.Text;
+                }
+                if (!discoveryServer.Text.StartsWith("http"))
+                {
+                    discoveryServer.Text = "http://" + discoveryServer.Text;
+                }
+                currentAccount.MiiverseDiscoveryServer = discoveryServer.Text;
+            }
+            if (!string.IsNullOrEmpty(portalServer.Text))
+            {
+                if (!portalServer.Text.StartsWith("http"))
+            {
+                    portalServer.Text = "http://" + portalServer.Text;
+                }
+                currentAccount.MiiversePortalServer = portalServer.Text;
+            }
 
             try
             {
@@ -100,12 +123,17 @@ namespace Miiverse_PC
                     UpdateLoginStatus();
                     return;
                 }
+                if (string.IsNullOrEmpty(currentAccount.MiiversePortalServer))
+                {
+                    // Only get the Miiverse portal server if it has not already
+                    // been set by the UI
                 currentStatus = await currentAccount.GetMiiversePortalServerAsync();
                 if (currentAccount.MiiversePortalServer is null)
                 {
                     await ShowErrorDialogAsync("Login failed", currentStatus);
                     UpdateLoginStatus();
                     return;
+                }
                 }
                 currentAccount.CreateParamPack((LanguageId)languageBox.SelectedItem, (CountryId)countryBox.SelectedItem, PlatformId.WiiU);
             }
