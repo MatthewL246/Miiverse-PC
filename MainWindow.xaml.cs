@@ -57,7 +57,7 @@ namespace Miiverse_PC
         /// </summary>
         private async void LoginAsync(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrEmpty(username.Text) || string.IsNullOrEmpty(passwordHash.Password))
+            if (string.IsNullOrWhiteSpace(username.Text) || string.IsNullOrWhiteSpace(passwordHash.Password))
             {
                 await ShowErrorDialogAsync
                 (
@@ -80,7 +80,7 @@ namespace Miiverse_PC
             UpdateLoginStatus(true);
             currentAccount = new(username.Text, passwordHash.Password);
 
-            if (!string.IsNullOrEmpty(accountServer.Text))
+            if (!string.IsNullOrWhiteSpace(accountServer.Text))
             {
                 if (!accountServer.Text.StartsWith("http"))
                 {
@@ -88,7 +88,7 @@ namespace Miiverse_PC
                 }
                 currentAccount.AccountServer = accountServer.Text;
 
-                if (string.IsNullOrEmpty(discoveryServer.Text))
+                if (string.IsNullOrWhiteSpace(discoveryServer.Text))
                 {
                     discoveryServer.Text = accountServer.Text;
                 }
@@ -98,7 +98,7 @@ namespace Miiverse_PC
                 }
                 currentAccount.MiiverseDiscoveryServer = discoveryServer.Text;
             }
-            if (!string.IsNullOrEmpty(portalServer.Text))
+            if (!string.IsNullOrWhiteSpace(portalServer.Text))
             {
                 if (!portalServer.Text.StartsWith("http"))
             {
