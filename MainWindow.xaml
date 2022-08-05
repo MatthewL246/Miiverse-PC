@@ -89,6 +89,6 @@
         </Button>
 
         <controls:WebView2 x:Name="webView" Grid.Row="2" Grid.ColumnSpan="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-            Loaded="SetupWebViewHandlersAsync" Source="http://portal.olv.pretendo.cc" />
+            Loaded="SetupWebViewHandlersAsync" Source="https://portal.olv.pretendo.cc" />
     </Grid>
 </Window>
