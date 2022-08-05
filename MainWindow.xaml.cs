@@ -26,6 +26,21 @@ namespace Miiverse_PC
             countryBox.SelectedItem = CountryId.UnitedStates;
         }
 
+        /// <summary>
+        ///   Normalizes a server name by adding "http://" to the beginning if
+        ///   it is not already there.
+        /// </summary>
+        /// <param name="server">A reference to the server name.</param>
+        private static string NormalizeServerName(string server)
+        {
+            string normalizedServer = server;
+            if (!server.StartsWith("http"))
+            {
+                normalizedServer = "http://" + server;
+            }
+            return normalizedServer;
+        }
+
         /// <summary>Goes back in the WebView.</summary>
         private void GoBack(object sender, RoutedEventArgs e)
         {
@@ -82,29 +97,25 @@ namespace Miiverse_PC
 
             if (!string.IsNullOrWhiteSpace(accountServer.Text))
             {
-                if (!accountServer.Text.StartsWith("http"))
-                {
-                    accountServer.Text = "http://" + accountServer.Text;
-                }
-                currentAccount.AccountServer = accountServer.Text;
+                string accountServerName = NormalizeServerName(accountServer.Text);
+                currentAccount.AccountServer = accountServerName;
+                accountServer.Text = accountServerName;
 
                 if (string.IsNullOrWhiteSpace(discoveryServer.Text))
                 {
                     discoveryServer.Text = accountServer.Text;
                 }
-                if (!discoveryServer.Text.StartsWith("http"))
-                {
-                    discoveryServer.Text = "http://" + discoveryServer.Text;
-                }
-                currentAccount.MiiverseDiscoveryServer = discoveryServer.Text;
+
+                string discoveryServerName = NormalizeServerName(discoveryServer.Text);
+                currentAccount.MiiverseDiscoveryServer = discoveryServerName;
+                discoveryServer.Text = discoveryServerName;
             }
             if (!string.IsNullOrWhiteSpace(portalServer.Text))
             {
-                if (!portalServer.Text.StartsWith("http"))
-            {
-                    portalServer.Text = "http://" + portalServer.Text;
-                }
+                string portalServerName = NormalizeServerName(portalServer.Text);
                 currentAccount.MiiversePortalServer = portalServer.Text;
+
+                portalServer.Text = portalServerName;
             }
 
             try
