@@ -71,8 +71,16 @@ namespace Miiverse_PC
 
             if (dataFile is not null)
             {
-                string profileData = await currentAccount.GetUserProfileXmlAsync();
-                await FileIO.WriteTextAsync(dataFile, profileData);
+                try
+                {
+                    string profileData = await currentAccount.GetUserProfileXmlAsync();
+                    var profileXml = System.Xml.Linq.XDocument.Parse(profileData);
+                    await FileIO.WriteTextAsync(dataFile, profileXml.ToString());
+                }
+                catch (Exception ex)
+                {
+                    await ShowErrorDialogAsync("Failed to save profile data", ex.Message).ConfigureAwait(false);
+                }
             }
         }
 
