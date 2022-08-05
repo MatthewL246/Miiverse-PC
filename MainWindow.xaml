@@ -34,7 +34,8 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" FontSize="16" FontWeight="Bold">
+                <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" FontSize="16" FontWeight="Bold"
+                    ToolTipService.ToolTip="These options are simply the login credentials used to log into an account. Please read the README.md file on GitHub for more information about the password hash.">
                     Login information:
                 </TextBlock>
                 <TextBox x:Name="username" Grid.Row="0" Grid.Column="1" MaxWidth="200" Margin="8" PlaceholderText="Enter PNID username here" />
@@ -44,7 +45,8 @@
                     Login
                 </Button>
 
-                <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" FontSize="16" FontWeight="Bold">
+                <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" FontSize="16" FontWeight="Bold"
+                    ToolTipService.ToolTip="These options control what Pretendo server to connect to. By default, Pretendo's official servers are used, and the portal host is downloaded from the discovery server. If only the account server is specified, the account server is also used as the discovery server. Specifying an alternate portal host skips using the discovery server.">
                     Server options:
                 </TextBlock>
                 <TextBox x:Name="accountServerText" Grid.Row="1" Grid.Column="1" MaxWidth="200" Margin="8" PlaceholderText="Account server" />
@@ -59,7 +61,9 @@
                 <TextBlock Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" FontSize="16" FontWeight="Bold"
                     ToolTipService.ToolTip="Important note: the language and country options do not currently have any effect besides setting a value in the database. However, Juxt will most likely use these values for localization in the future.">
                     Login options:<LineBreak />
-                    (Hover for info)</TextBlock>
+                    <Run FontSize="12">(Hover over option</Run><LineBreak />
+                    <Run FontSize="12">categories for more info)</Run>
+                </TextBlock>
                 <ComboBox x:Name="languageBox" Grid.Row="2" Grid.Column="1" Margin="8" Header="Miiverse language" Text="Select language" />
                 <ComboBox x:Name="countryBox" Grid.Row="2" Grid.Column="2" Margin="8" Header="Console country" Text="Select country" />
                 <RadioButton x:Name="wiiuButton" Grid.Row="2" Grid.Column="3" Content="Wii U" GroupName="Consoles" IsChecked="true" />
