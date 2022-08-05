@@ -66,8 +66,11 @@
                 </TextBlock>
                 <ComboBox x:Name="languageBox" Grid.Row="2" Grid.Column="1" Margin="8" Header="Miiverse language" Text="Select language" />
                 <ComboBox x:Name="countryBox" Grid.Row="2" Grid.Column="2" Margin="8" Header="Console country" Text="Select country" />
-                <RadioButton x:Name="wiiuButton" Grid.Row="2" Grid.Column="3" Content="Wii U" GroupName="Consoles" IsChecked="true" />
-                <RadioButton x:Name="threeDsButton" Grid.Row="2" Grid.Column="4" Content="3DS" GroupName="Consoles" />
+                <RadioButtons Grid.Row="2" Grid.Column="3" Grid.ColumnSpan="2" Header="Select console (Wii U recommended, 3DS is unstable)"
+                    MaxColumns="2" SelectedIndex="0">
+                    <x:String>Wii U</x:String>
+                    <x:String>3DS</x:String>
+                </RadioButtons>
             </Grid>
         </Expander>
 
