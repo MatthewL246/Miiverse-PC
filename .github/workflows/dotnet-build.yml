@@ -19,7 +19,7 @@ jobs:
         dotnet-version: 6.0.x
         
     - name: Restore app dependencies
-      run: dotnet restore
+      run: dotnet restore -v normal
 
     - name: Build app
-      run: dotnet build
+      run: dotnet build -v normal
