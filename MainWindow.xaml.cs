@@ -31,7 +31,8 @@ namespace Miiverse_PC
         ///   Normalizes a server name by adding "http://" to the beginning if
         ///   it is not already there.
         /// </summary>
-        /// <param name="server">A reference to the server name.</param>
+        /// <param name="server">The non-normalized server name.</param>
+        /// <returns>The server name after normalization.</returns>
         private static string NormalizeServerName(string server)
         {
             string normalizedServer = server;
