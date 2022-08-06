@@ -164,6 +164,8 @@ namespace Miiverse_PC
 
             try
             {
+                var platform = (consoleSelect.SelectedItem as string) == "3DS" ? PlatformId.ThreeDS : PlatformId.WiiU;
+
                 currentStatus = await currentAccount.CreateOauth2TokenAsync();
                 if (currentAccount.OauthToken is null)
                 {
@@ -182,7 +184,7 @@ namespace Miiverse_PC
                 {
                     // Only get the Miiverse portal server if it has not already
                     // been set by the UI
-                    currentStatus = await currentAccount.GetMiiversePortalServerAsync();
+                    currentStatus = await currentAccount.GetMiiversePortalServerAsync(platform);
                     if (currentAccount.MiiversePortalServer is null)
                     {
                         await ShowErrorDialogAsync("Login failed", currentStatus);
@@ -190,7 +192,7 @@ namespace Miiverse_PC
                         return;
                     }
                 }
-                currentAccount.CreateParamPack((LanguageId)languageBox.SelectedItem, (CountryId)countryBox.SelectedItem, PlatformId.WiiU);
+                currentAccount.CreateParamPack((LanguageId)languageBox.SelectedItem, (CountryId)countryBox.SelectedItem, platform);
             }
             catch (HttpRequestException ex)
             {

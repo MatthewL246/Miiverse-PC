@@ -217,6 +217,9 @@ namespace Miiverse_PC
         ///   Gets the Miiverse portal server from the discovery server
         ///   asynchronously.
         /// </summary>
+        /// <param name="platform">
+        ///   The <see cref="PlatformId" /> of the target portal server.
+        /// </param>
         /// <returns>
         ///   A task object representing a string with a formatted error message
         ///   based on the server response.
@@ -224,7 +227,7 @@ namespace Miiverse_PC
         /// <exception cref="InvalidOperationException" />
         /// <exception cref="HttpRequestException" />
         /// <exception cref="XmlException" />
-        public async Task<string> GetMiiversePortalServerAsync()
+        public async Task<string> GetMiiversePortalServerAsync(PlatformId platform)
         {
             if (MiiverseToken is null)
             {
@@ -244,7 +247,9 @@ namespace Miiverse_PC
             string xmlResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             var xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(xmlResponse);
-            MiiversePortalServer = "https://" + xmlDocument.GetElementsByTagName("portal_host")[0]?.InnerText;
+
+            string portalHostTag = platform == PlatformId.ThreeDS ? "n3ds_host" : "portal_host";
+            MiiversePortalServer = "https://" + xmlDocument.GetElementsByTagName(portalHostTag)[0]?.InnerText;
 
             return GenerateErrorMessage("Miiverse portal discovery", response.StatusCode, xmlDocument);
         }
