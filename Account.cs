@@ -167,50 +167,24 @@ namespace Miiverse_PC
         /// <exception cref="InvalidOperationException" />
         public void CreateParamPack(LanguageId languageId, CountryId countryId, PlatformId platformId)
         {
-            RegionId regionId;
-            TitleId titleId;
+            var regionId = countryId switch
+            {
+                CountryId.Japan => RegionId.Japan, // Japan only
+                >= CountryId.Anguilla and <= CountryId.Venezuela => RegionId.America, // Countries that count as "America"
+                >= CountryId.Albania and <= CountryId.Jordan => RegionId.Europe, // All other countries that count as "Europe"
+                _ => throw new InvalidOperationException("Invalid country ID"),
+            };
 
-            if (countryId == CountryId.Japan)
-            {
-                // Japan only
-                regionId = RegionId.Japan;
-            }
-            else if (countryId is >= CountryId.Anguilla and <= CountryId.Venezuela)
-            {
-                // Countries that count as "America"
-                regionId = RegionId.America;
-            }
-            else if (countryId is >= CountryId.Albania and <= CountryId.Jordan)
-            {
-                // All other countries that count as "Europe"
-                regionId = RegionId.Europe;
-            }
-            else
-            {
-                throw new InvalidOperationException("Invalid country ID");
-            }
-
+            var titleId;
             if (platformId == PlatformId.WiiU)
             {
-                if (regionId == RegionId.Japan)
+                titleId = regionId switch
                 {
-                    // Japanese console
-                    titleId = TitleId.JapanMenu;
-                }
-                else if (regionId == RegionId.America)
-                {
-                    // American console
-                    titleId = TitleId.AmericaMenu;
-                }
-                else if (regionId == RegionId.Europe)
-                {
-                    // European console
-                    titleId = TitleId.EuropeMenu;
-                }
-                else
-                {
-                    titleId = TitleId.Unknown;
-                }
+                    RegionId.Japan => TitleId.JapanMenu,
+                    RegionId.America => TitleId.AmericaMenu,
+                    RegionId.Europe => TitleId.EuropeMenu,
+                    _ => TitleId.Unknown,
+                };
             }
             else
             {
