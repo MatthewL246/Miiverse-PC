@@ -8,6 +8,9 @@ namespace Miiverse_PC
     /// <summary>The main window of the app.</summary>
     public sealed partial class MainWindow : Window
     {
+        /// <summary>The current window's window handle.</summary>
+        private readonly IntPtr hwnd;
+
         /// <summary>The currently logged-in account.</summary>
         private Account? currentAccount;
 
@@ -18,6 +21,7 @@ namespace Miiverse_PC
         public MainWindow()
         {
             InitializeComponent();
+            hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
             Title = "Miiverse PC Client";
 
             // Set up combo box bindings
@@ -62,10 +66,8 @@ namespace Miiverse_PC
             };
             savePicker.FileTypeChoices.Add("XML data", new List<string>() { ".xml" });
 
-            // Create a new window handle and initialize the file picker with
-            // it. This prevents the file picker from throwing a COM exception
-            var window = new Window();
-            var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
+            // Initialize the file picker with the current window handle. This
+            // prevents the file picker from throwing a COM exception
             WinRT.Interop.InitializeWithWindow.Initialize(savePicker, hwnd);
 
             StorageFile dataFile = await savePicker.PickSaveFileAsync();
