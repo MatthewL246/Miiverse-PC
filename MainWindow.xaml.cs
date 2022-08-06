@@ -238,6 +238,43 @@ namespace Miiverse_PC
             }
         }
 
+        /// <summary>
+        ///   Navigates the WebView to different Miiverse pages when a button is
+        ///   pressed, depending on the button's name.
+        /// </summary>
+        private void NavigateToPage(object sender, RoutedEventArgs e)
+        {
+            if (currentAccount is not null && currentAccount.IsSignedIn)
+            {
+                switch (((Button)sender).Name)
+                {
+                    case "userPage":
+                        webView.Source = new(currentAccount.MiiversePortalServer + "/users/me");
+                        break;
+
+                    case "userMenuPage":
+                        webView.Source = new(currentAccount.MiiversePortalServer + "/users/menu");
+                        break;
+
+                    case "activityFeedPage":
+                        webView.Source = new(currentAccount.MiiversePortalServer + "/activity-feed");
+                        break;
+
+                    case "communitiesPage":
+                        webView.Source = new(currentAccount.MiiversePortalServer + "/communities");
+                        break;
+
+                    case "messagesPage":
+                        webView.Source = new(currentAccount.MiiversePortalServer + "/messages");
+                        break;
+
+                    case "notificationsPage":
+                        webView.Source = new(currentAccount.MiiversePortalServer + "/news");
+                        break;
+                }
+            }
+        }
+
         /// <summary>Navigates the WebView to a URI asynchronously.</summary>
         private async void NavigateToUriAsync(object sender, RoutedEventArgs e)
         {

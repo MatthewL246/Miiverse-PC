@@ -9,6 +9,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
@@ -90,5 +91,14 @@
 
         <controls:WebView2 x:Name="webView" Grid.Row="2" Grid.ColumnSpan="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
             Loaded="SetupWebViewHandlersAsync" Source="https://portal.olv.pretendo.cc" />
+
+        <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="5" Orientation="Horizontal">
+            <Button x:Name="userPage" Click="NavigateToPage" Content="Go to User Page" />
+            <Button x:Name="userMenuPage" Click="NavigateToPage" Content="Go to User Menu" />
+            <Button x:Name="activityFeedPage" Click="NavigateToPage" Content="Go to Activity Feed" />
+            <Button x:Name="communitiesPage" Click="NavigateToPage" Content="Go to Communities" />
+            <Button x:Name="messagesPage" Click="NavigateToPage" Content="Go to Messages" />
+            <Button x:Name="notificationsPage" Click="NavigateToPage" Content="Go to Notifications" />
+        </StackPanel>
     </Grid>
 </Window>
