@@ -277,26 +277,6 @@ namespace Miiverse_PC
             }
         }
 
-        /// <summary>Navigates the WebView to a URI asynchronously.</summary>
-        private async void NavigateToUriAsync(object sender, RoutedEventArgs e)
-        {
-            string uri = addressBar.Text;
-            if (!uri.StartsWith("http"))
-            {
-                uri = "http://" + uri;
-                addressBar.Text = uri;
-            }
-
-            try
-            {
-                webView.Source = new(uri);
-            }
-            catch (FormatException)
-            {
-                await ShowErrorDialogAsync("Invalid URL", "The URL you entered was not valid: " + uri);
-            }
-        }
-
         /// <summary>Reloads the WebView.</summary>
         private void Reload(object sender, RoutedEventArgs e)
         {

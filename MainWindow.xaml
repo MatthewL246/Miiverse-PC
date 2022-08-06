@@ -84,10 +84,7 @@
         <Button x:Name="reloadButton" Grid.Row="1" Grid.Column="2" Click="Reload">
             Reload
         </Button>
-        <TextBox x:Name="addressBar" Grid.Row="1" Grid.Column="3" />
-        <Button x:Name="goButton" Grid.Row="1" Grid.Column="4" Click="NavigateToUriAsync">
-            Go!
-        </Button>
+        <TextBox x:Name="addressBar" Grid.Row="1" Grid.Column="3" IsReadOnly="True" />
 
         <controls:WebView2 x:Name="webView" Grid.Row="2" Grid.ColumnSpan="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
             Loaded="SetupWebViewHandlersAsync" Source="https://portal.olv.pretendo.cc" />
