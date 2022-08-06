@@ -2,6 +2,7 @@
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Web.WebView2.Core;
 using Windows.Storage;
+using Windows.System;
 
 namespace Miiverse_PC
 {
@@ -229,6 +230,16 @@ namespace Miiverse_PC
             }
         }
 
+        /// <summary>Logs in when enter is pressed.</summary>
+        private void LoginOnEnter(object sender, Microsoft.UI.Xaml.Input.KeyRoutedEventArgs e)
+        {
+            if (e.Key == VirtualKey.Enter)
+            {
+                // Call LoginAsync without awaiting and use an empty sender
+                LoginAsync(new object(), new RoutedEventArgs());
+            }
+        }
+
         /// <summary>
         ///   Handles WebResourceRequested events for the Miiverse portal from
         ///   the WebView.
@@ -239,6 +250,15 @@ namespace Miiverse_PC
             {
                 e.Request.Headers.SetHeader("X-Nintendo-ServiceToken", currentAccount.MiiverseToken);
                 e.Request.Headers.SetHeader("X-Nintendo-ParamPack", currentAccount.ParamPackData);
+            }
+        }
+
+        /// <summary>Moves focus to the to password box on enter.</summary>
+        private void MoveToPasswordOnEnter(object sender, Microsoft.UI.Xaml.Input.KeyRoutedEventArgs e)
+        {
+            if (e.Key == VirtualKey.Enter)
+            {
+                passwordHash.Focus(FocusState.Programmatic);
             }
         }
 

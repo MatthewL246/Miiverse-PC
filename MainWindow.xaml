@@ -39,8 +39,9 @@
                     ToolTipService.ToolTip="These options are simply the login credentials used to log into an account. Please read the README.md file on GitHub for more information about the password hash.">
                     Login information:
                 </TextBlock>
-                <TextBox x:Name="username" Grid.Row="0" Grid.Column="1" MaxWidth="200" Margin="8" PlaceholderText="Enter PNID username here" />
-                <PasswordBox x:Name="passwordHash" Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" MaxWidth="400" Margin="8"
+                <TextBox x:Name="username" Grid.Row="0" Grid.Column="1" MaxWidth="200" Margin="8" KeyDown="MoveToPasswordOnEnter"
+                    PlaceholderText="Enter PNID username here" />
+                <PasswordBox x:Name="passwordHash" Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" MaxWidth="400" Margin="8" KeyDown="LoginOnEnter"
                     PlaceholderText="Paste PNID password hash here" />
                 <Button x:Name="loginButton" Grid.Row="0" Grid.Column="4" Margin="8" Click="LoginAsync">
                     Login
@@ -51,10 +52,12 @@
                     Server options:<LineBreak />
                     <Run FontSize="12">(All optional)</Run>
                 </TextBlock>
-                <TextBox x:Name="accountServer" Grid.Row="1" Grid.Column="1" MaxWidth="200" Margin="8" PlaceholderText="Account server" />
-                <TextBox x:Name="discoveryServer" Grid.Row="1" Grid.Column="2" MaxWidth="200" Margin="8"
+                <TextBox x:Name="accountServer" Grid.Row="1" Grid.Column="1" MaxWidth="200" Margin="8" KeyDown="LoginOnEnter"
+                    PlaceholderText="Account server" />
+                <TextBox x:Name="discoveryServer" Grid.Row="1" Grid.Column="2" MaxWidth="200" Margin="8" KeyDown="LoginOnEnter"
                     PlaceholderText="Miiverse discovery server" />
-                <TextBox x:Name="portalServer" Grid.Row="1" Grid.Column="3" MaxWidth="200" Margin="8" PlaceholderText="Miiverse portal server" />
+                <TextBox x:Name="portalServer" Grid.Row="1" Grid.Column="3" MaxWidth="200" Margin="8" KeyDown="LoginOnEnter"
+                    PlaceholderText="Miiverse portal server" />
                 <Button x:Name="downloadButton" Grid.Row="1" Grid.Column="4" Margin="8" Click="DownloadUserProfileDataAsync">
                     Download user profile data
                 </Button>
