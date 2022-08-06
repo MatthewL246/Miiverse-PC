@@ -157,7 +157,7 @@ namespace Miiverse_PC
             if (!string.IsNullOrWhiteSpace(portalServer.Text))
             {
                 string portalServerName = NormalizeServerName(portalServer.Text);
-                currentAccount.MiiversePortalServer = portalServer.Text;
+                currentAccount.MiiversePortalServer = portalServerName;
 
                 portalServer.Text = portalServerName;
             }
