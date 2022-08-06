@@ -4,12 +4,12 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
-    assignees: "MatthewL246"
+    assignees: ["MatthewL246"]
     open-pull-requests-limit: 10
 
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "daily"
-    assignees: "MatthewL246"
+    assignees: ["MatthewL246"]
     open-pull-requests-limit: 10
