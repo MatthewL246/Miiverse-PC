@@ -175,7 +175,7 @@ namespace Miiverse_PC
                 _ => throw new InvalidOperationException("Invalid country ID"),
             };
 
-            var titleId;
+            TitleId titleId;
             if (platformId == PlatformId.WiiU)
             {
                 titleId = regionId switch
