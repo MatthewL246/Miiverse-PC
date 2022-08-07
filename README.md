@@ -11,3 +11,9 @@ This is a Miiverse portal client for PCs, specifically for Pretendo Juxtapositio
 5. Extract the release zip and run the `Miiverse-PC.exe` app inside it.
 
 *Note: Hopefully, this installation process gets simpler in the future. But for now, this is all necessary to make sure the app runs.*
+
+## Getting the password hash
+
+1. Log in to your Pretendo account at [pretendo.network](https://pretendo.network/account) (or an different Pretendo server that is hosting the website).
+2. Click the "Download account files" button and save the zip.
+3. Extract the zip and open the `account.dat` file in any text editor. The password hash is the 64-character hash after `AccountPasswordCache=`.
