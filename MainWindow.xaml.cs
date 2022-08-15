@@ -83,7 +83,7 @@ namespace Miiverse_PC
                 }
                 catch (Exception ex)
                 {
-                    await ShowErrorDialogAsync("Failed to save profile data", ex.Message).ConfigureAwait(false);
+                    await ShowErrorDialogAsync("Failed to save profile data", ex.ToString()).ConfigureAwait(false);
                 }
             }
         }
@@ -199,15 +199,15 @@ namespace Miiverse_PC
             }
             catch (HttpRequestException ex)
             {
-                await ShowErrorDialogAsync("Login failed (network error)", "The login failed because of a network error: " + ex.Message);
+                await ShowErrorDialogAsync("Login failed (network error)", "The login failed because of a network error: " + ex.ToString());
             }
             catch (System.Xml.XmlException ex)
             {
-                await ShowErrorDialogAsync("Login failed (parse error)", "The login failed because the account server's response could not be parsed: " + ex.Message);
+                await ShowErrorDialogAsync("Login failed (parse error)", "The login failed because the account server's response could not be parsed: " + ex.ToString());
             }
             catch (Exception ex)
             {
-                await ShowErrorDialogAsync("Login failed (unknown error)", "The login failed because of an unknown error: " + ex.Message);
+                await ShowErrorDialogAsync("Login failed (unknown error)", "The login failed because of an unknown error: " + ex.ToString());
             }
             finally
             {
