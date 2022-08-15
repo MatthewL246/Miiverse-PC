@@ -33,7 +33,7 @@ namespace Miiverse_PC
         }
 
         /// <summary>
-        ///   Normalizes a server name by adding "http://" to the beginning if
+        ///   Normalizes a server name by adding "https://" to the beginning if
         ///   it is not already there.
         /// </summary>
         /// <param name="server">The non-normalized server name.</param>
@@ -43,7 +43,7 @@ namespace Miiverse_PC
             string normalizedServer = server;
             if (!server.StartsWith("http"))
             {
-                normalizedServer = "http://" + server;
+                normalizedServer = "https://" + server;
             }
             return normalizedServer;
         }
