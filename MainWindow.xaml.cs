@@ -144,25 +144,21 @@ namespace Miiverse_PC
 
             if (!string.IsNullOrWhiteSpace(accountServer.Text))
             {
-                string accountServerName = NormalizeServerName(accountServer.Text);
-                currentAccount.AccountServer = accountServerName;
-                accountServer.Text = accountServerName;
+                accountServer.Text = NormalizeServerName(accountServer.Text);
+                currentAccount.AccountServer = accountServer.Text;
 
                 if (string.IsNullOrWhiteSpace(discoveryServer.Text))
                 {
                     discoveryServer.Text = accountServer.Text;
                 }
 
-                string discoveryServerName = NormalizeServerName(discoveryServer.Text);
-                currentAccount.MiiverseDiscoveryServer = discoveryServerName;
-                discoveryServer.Text = discoveryServerName;
+                discoveryServer.Text = NormalizeServerName(discoveryServer.Text);
+                currentAccount.MiiverseDiscoveryServer = discoveryServer.Text;
             }
             if (!string.IsNullOrWhiteSpace(portalServer.Text))
             {
-                string portalServerName = NormalizeServerName(portalServer.Text);
-                currentAccount.MiiversePortalServer = portalServerName;
-
-                portalServer.Text = portalServerName;
+                portalServer.Text = NormalizeServerName(portalServer.Text);
+                currentAccount.MiiversePortalServer = portalServer.Text;
             }
 
             try
