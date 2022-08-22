@@ -32,13 +32,18 @@ jobs:
         with:
           path: ~/.nuget/packages
           key: nuget-scs-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
-          restore-keys: nuget-scs-${{ runner.os }}--
+          restore-keys: nuget-scs-${{ runner.os }}-
 
       - name: Restore app dependencies
         run: dotnet restore
 
       - name: Build with Security Code Scan
         run: dotnet build
+
+      - name: Set up .NET Core 3.1 for the Sarif tool
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: 3.1.x
 
       - name: Convert scan results for uploading to GitHub
         uses: security-code-scan/security-code-scan-results-action@v1.3
