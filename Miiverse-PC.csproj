@@ -17,6 +17,8 @@
         <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
         <ImplicitUsings>enable</ImplicitUsings>
         <ErrorReport>send</ErrorReport>
+        <PackageCertificateThumbprint>428F9C7F9AC01E6AD06D38183C3D31065803D977</PackageCertificateThumbprint>
+        <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
     </PropertyGroup>
 
     <ItemGroup>
