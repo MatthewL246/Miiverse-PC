@@ -14,11 +14,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up .NET 6.0
-        uses: actions/setup-dotnet@v2
-        with:
-          dotnet-version: 6.0.x
-
       - name: Set up NuGet
         uses: nuget/setup-nuget@v1
 
@@ -40,11 +35,6 @@ jobs:
 
       - name: Build with Security Code Scan
         run: dotnet build
-
-      - name: Set up .NET Core 3.1 for the Sarif tool
-        uses: actions/setup-dotnet@v2
-        with:
-          dotnet-version: 3.1.x
 
       - name: Convert scan results for uploading to GitHub
         uses: security-code-scan/security-code-scan-results-action@v1.3
