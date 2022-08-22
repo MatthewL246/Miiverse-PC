@@ -19,7 +19,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Create $SHORT_SHA environment variable
-      run: echo "SHORT_SHA=`git rev-parse --short HEAD`" >> $GITHUB_ENV
+      run: echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $env:GITHUB_ENV
 
     - name: Set up .NET 6.0
       uses: actions/setup-dotnet@v2
@@ -38,5 +38,5 @@ jobs:
     - name: Upload build results
       uses: actions/upload-artifact@v3
       with:
-        name: Miiverse-PC Unpackaged Build - ${{ matrix.configuration }} ${{ matrix.platform }} (${SHORT_SHA})
+        name: Miiverse-PC Unpackaged Build - ${{ matrix.configuration }} ${{ matrix.platform }} (${env:SHORT_SHA})
         path: ./bin/publish/
