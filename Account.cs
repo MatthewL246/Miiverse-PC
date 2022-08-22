@@ -7,11 +7,6 @@ namespace Miiverse_PC
     /// <summary>Represents a Pretendo account or PNID.</summary>
     internal sealed class Account
     {
-        /// <summary>
-        ///   The account server's self-signed certificate hash.
-        /// </summary>
-        private const string accountServerCertificateHash = "4C437B566E7FA361A55E1F007AA5FAAA6FA8FB68";
-
         /// <summary>The hard-coded client ID used by the Wii U.</summary>
         private const string clientId = "a2efa818a34fa16b8afbc8a74eba3eda";
 
@@ -19,14 +14,12 @@ namespace Miiverse_PC
         private const string clientSecret = "c91cdb5658bd4954ade78533a339cf9a";
 
         /// <summary>
-        ///   The discovery server's self-signed certificate hash.
-        /// </summary>
-        private const string discoveryServerCertificateHash = "25215120B7E6FD592ECA3598FB51DDD3A3E3A280";
-
-        /// <summary>
         ///   The title ID of the Wii U Miiverse applet in the US.
         /// </summary>
         private const string miiverseTitleId = "000500301001610A";
+
+        /// <summary>The server's self-signed root certificate hash.</summary>
+        private const string serverRootCertificateHash = "209F918F628347868A559F52B68D007B6DD4554F";
 
         private static readonly HttpClient client = new(new HttpClientHandler()
         {
@@ -35,9 +28,7 @@ namespace Miiverse_PC
                 // Returns true if the certificate is valid or if it is invalid
                 // and its hash matches an expected hash
                 return errors == System.Net.Security.SslPolicyErrors.None
-                    || (certificate is not null
-                    && (certificate.GetCertHashString() == accountServerCertificateHash
-                    || certificate.GetCertHashString() == discoveryServerCertificateHash));
+                    || chain?.ChainElements.Last().Certificate.GetCertHashString() == serverRootCertificateHash;
             }
         });
 
