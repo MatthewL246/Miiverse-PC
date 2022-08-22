@@ -30,9 +30,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.nuget/packages
-          key:
-            nuget-${{ runner.os }}-${{ matrix.platform }}- ${{
-            hashFiles('**/*.csproj') }}
+          key: nuget-${{ runner.os }}-${{ matrix.platform }}-${{ hashFiles('**/*.csproj') }}
           restore-keys: nuget-${{ runner.os }}-${{ matrix.platform }}-
 
       - name: Cache build results
@@ -41,34 +39,22 @@ jobs:
           path: |
             ./bin
             ./obj
-          key:
-            ${{ github.job }}-${{ runner.os }}-${{ matrix.configuration }}- ${{
-            matrix.platform }}-${{ github.sha }}
-          restore-keys:
-            ${{ github.job }}-${{ runner.os }}-${{ matrix.configuration }}-
-            ${{matrix.platform }}-
+          key: ${{ github.job }}-${{ runner.os }}-${{ matrix.configuration }}-${{ matrix.platform }}-${{ github.sha }}
+          restore-keys: ${{ github.job }}-${{ runner.os }}-${{ matrix.configuration }}-${{matrix.platform }}-
 
       - name: Restore app dependencies
-        run:
-          dotnet restore -p Configuration=${{ matrix.configuration }} -p
-          Platform=${{ matrix.platform }} -v normal
+        run: dotnet restore -p Configuration=${{ matrix.configuration }} -p Platform=${{ matrix.platform }} -v normal
 
       - name: Build the app
-        run:
-          dotnet build -p Configuration=${{ matrix.configuration }} -p
-          Platform=${{ matrix.platform }} -v normal
+        run: dotnet build -p Configuration=${{ matrix.configuration }} -p Platform=${{ matrix.platform }} -v normal
 
       - name: Publish the built app
-        run:
-          dotnet publish -p Configuration=${{ matrix.configuration }} -p
-          Platform=${{ matrix.platform }} -v normal
+        run: dotnet publish -p Configuration=${{ matrix.configuration }} -p Platform=${{ matrix.platform }} -v normal
 
       - name: Upload build results
         uses: actions/upload-artifact@v3
         with:
-          name:
-            Miiverse-PC Unpackaged Build - ${{ matrix.configuration }} ${{
-            matrix.platform }} (${{ env.SHORT_SHA }})
+          name: Miiverse-PC Unpackaged Build -${{ matrix.configuration }} ${{ matrix.platform }} (${{ env.SHORT_SHA }})
           path: ./bin/publish/
 
   build-packaged:
@@ -99,9 +85,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.nuget/packages
-          key:
-            nuget-${{ runner.os }}-${{ matrix.platform }}-${{
-            hashFiles('**/*.csproj') }}
+          key: nuget-${{ runner.os }}-${{ matrix.platform }}-${{ hashFiles('**/*.csproj') }}
           restore-keys: nuget-${{ runner.os }}-${{ matrix.platform }}-
 
       - name: Cache build results
@@ -110,12 +94,8 @@ jobs:
           path: |
             ./bin
             ./obj
-          key:
-            ${{ github.job }}-${{ runner.os }}-${{ matrix.configuration }}-${{
-            matrix.platform }}-${{ github.sha }}
-          restore-keys:
-            ${{ github.job }}-${{ runner.os }}-${{ matrix.configuration }}-${{
-            matrix.platform }}-
+          key: ${{ github.job }}-${{ runner.os }}-${{ matrix.configuration }}-${{ matrix.platform }}-${{ github.sha }}
+          restore-keys: ${{ github.job }}-${{ runner.os }}-${{ matrix.configuration }}-${{ matrix.platform }}-
 
       - name: Decode and store MSIX signing key
         run: |
@@ -127,20 +107,16 @@ jobs:
           Remove-Item GitHubActions-Key.pfx
 
       - name: Restore app dependencies
-        run:
-          msbuild /t:Restore /p:Configuration=${{ matrix.configuration }}
-          /p:Platform=${{ matrix.platform }}
+        run: msbuild /t:Restore /p:Configuration=${{ matrix.configuration }} /p:Platform=${{ matrix.platform }}
 
-      - name: Build the app and generate MSIX package
+      - name: Build the app and generate a MSIX package
         run:
-          msbuild /p:Configuration=${{ matrix.configuration }} /p:Platform=${{
-          matrix.platform }} /p:PackageCertificateThumbprint=${{ env.THUMBPRINT
-          }} /p:AppxPackageDir="./Packages/" /p:GenerateAppxPackageOnBuild=true
+          msbuild /p:Configuration=${{ matrix.configuration }} /p:Platform=${{ matrix.platform }}
+          /p:PackageCertificateThumbprint=${{ env.THUMBPRINT }}
+          /p:AppxPackageDir="./Packages/" /p:GenerateAppxPackageOnBuild=true
 
       - name: Upload the MSIX package
         uses: actions/upload-artifact@v3
         with:
-          name:
-            Miiverse-PC Package - ${{ matrix.configuration }} ${{
-            matrix.platform }} (${{ env.SHORT_SHA }})
+          name: Miiverse-PC Package - ${{ matrix.configuration }} ${{ matrix.platform }} (${{ env.SHORT_SHA }})
           path: ./Packages/
