@@ -1,0 +1,36 @@
+name: .NET Build
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-unpackaged:
+    name: Unpackaged Build
+    strategy:
+      matrix:
+        configuration: [Debug, Release]
+        platform: [x86, x64, arm64]
+    runs-on: windows-latest
+
+    steps:
+    - name: Set up .NET 6.0
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 6.0.x
+
+    - name: Restore app dependencies
+      run: dotnet restore -p Configuration=${{ matrix.configuration }} -p Platform=${{ matrix.platform }} -v normal
+
+    - name: Build app
+      run: dotnet build -p Configuration=${{ matrix.configuration }} -p Platform=${{ matrix.platform }} -v normal
+
+    - name: Publish app build
+      run: dotnet publish -p Configuration=${{ matrix.configuration }} -p Platform=${{ matrix.platform }} -v normal
+
+    - name: Upload build results
+      uses: actions/upload-artifact@v3
+      with:
+        name: unpackaged-build-${{ matrix.configuration }}-${{ matrix.platform }}
+        path: ./bin/publish/
