@@ -8,6 +8,7 @@ on:
 
 jobs:
   analyze:
+    name: Analyze
     runs-on: windows-latest
     steps:
       - name: Checkout repository
