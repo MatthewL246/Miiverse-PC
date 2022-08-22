@@ -30,7 +30,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ~/.nuget/packages
-        key: nuget-${{ runner.os }}-${{ matrix.platform }}-${{ hashFiles("**/*.csproj") }}
+        key: nuget-${{ runner.os }}-${{ matrix.platform }}-${{ hashFiles('**/*.csproj') }}
         restore-keys: nuget-${{ runner.os }}-${{ matrix.platform }}-
 
     - name: Cache build results
