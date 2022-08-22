@@ -26,6 +26,22 @@ jobs:
       with:
         dotnet-version: 6.0.x
 
+    - name: Cache NuGet packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.nuget/packages
+        key: nuget-${{ runner.os }}-${{ matrix.platform }}-${{ hashFiles("**/*.csproj") }}
+        restore-keys: nuget-${{ runner.os }}-${{ matrix.platform }}-
+
+    - name: Cache build results
+      uses: actions/cache@v3
+      with:
+        path: |
+          ./bin
+          ./obj
+        key: ${{ github.job }}-${{ runner.os }}-${{ matrix.configuration }}-${{ matrix.platform }}-${{ github.sha }}
+        restore-keys: ${{ github.job }}-${{ runner.os }}-${{ matrix.configuration }}-${{ matrix.platform }}-
+
     - name: Restore app dependencies
       run: dotnet restore -p Configuration=${{ matrix.configuration }} -p Platform=${{ matrix.platform }} -v normal
 
