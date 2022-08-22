@@ -56,3 +56,64 @@ jobs:
       with:
         name: Miiverse-PC Unpackaged Build - ${{ matrix.configuration }} ${{ matrix.platform }} (${{ env.SHORT_SHA }})
         path: ./bin/publish/
+
+  build-packaged:
+    # See https://docs.microsoft.com/en-us/windows/apps/package-and-deploy/ci-for-winui3 for example
+    name: Packaged Build
+    strategy:
+      matrix:
+        configuration: [Debug, Release]
+        platform: [x86, x64, arm64]
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Create $SHORT_SHA environment variable
+      run: echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $env:GITHUB_ENV
+
+    - name: Set up .NET 6.0
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 6.0.x
+
+    - name: Set up MSBuild
+      uses: microsoft/setup-msbuild@v1
+
+    - name: Cache NuGet packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.nuget/packages
+        key: nuget-${{ runner.os }}-${{ matrix.platform }}-${{ hashFiles('**/*.csproj') }}
+        restore-keys: nuget-${{ runner.os }}-${{ matrix.platform }}-
+
+    - name: Cache build results
+      uses: actions/cache@v3
+      with:
+        path: |
+          ./bin
+          ./obj
+        key: ${{ github.job }}-${{ runner.os }}-${{ matrix.configuration }}-${{ matrix.platform }}-${{ github.sha }}
+        restore-keys: ${{ github.job }}-${{ runner.os }}-${{ matrix.configuration }}-${{ matrix.platform }}-
+
+    - name: Decode and store MSIX signing key
+      run: |
+        $key_bytes = [System.Convert]::FromBase64String("${{ secrets.MSIX_SIGNING_KEY_BASE64 }}")
+        [IO.File]::WriteAllBytes("GitHubActions-Key.pfx", $pfx_cert_byte)
+        $password = ConvertTo-SecureString -String ${{ secrets.MSIX_SIGNING_KEY_PASSWORD }} -AsPlainText -Force
+        Import-PfxCertificate -FilePath GitHubActions-Key.pfx -CertStoreLocation "Cert:\CurrentUser\My" -Password $password
+        echo "THUMBPRINT=$((Get-PfxData -FilePath GitHubActions-Key.pfx -Password $password).EndEntityCertificates.Thumbprint)" >> $env:GITHUB_ENV
+        Remove-Item GitHubActions-Key.pfx
+
+    - name: Restore app dependencies
+      run: msbuild /t:Restore /p:Configuration=${{ matrix.configuration }} /p:Platform=${{ matrix.platform }}
+
+    - name: Build the app and generate MSIX package
+      run: msbuild /p:Configuration=${{ matrix.configuration }} /p:Platform=${{ matrix.platform }} /p:PackageCertificateThumbprint=${{ env.THUMBPRINT }} /p:AppxPackageDir="./Packages/" /p:GenerateAppxPackageOnBuild=true
+
+    - name: Upload the MSIX package
+      uses: actions/upload-artifact@v3
+      with:
+        name: Miiverse-PC Package - ${{ matrix.configuration }} ${{ matrix.platform }} (${{ env.SHORT_SHA }})
+        path: ./Packages/
