@@ -38,5 +38,5 @@ jobs:
     - name: Upload build results
       uses: actions/upload-artifact@v3
       with:
-        name: Miiverse-PC Unpackaged Build - ${{ matrix.configuration }} ${{ matrix.platform }} (${env:SHORT_SHA})
+        name: Miiverse-PC Unpackaged Build - ${{ matrix.configuration }} ${{ matrix.platform }} (${{ env.SHORT_SHA }})
         path: ./bin/publish/
