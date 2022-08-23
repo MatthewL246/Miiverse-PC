@@ -27,6 +27,15 @@
         <RepositoryUrl>https://github.com/MatthewL246/Miiverse-PC</RepositoryUrl>
         <PackageProjectUrl>https://github.com/MatthewL246/Miiverse-PC</PackageProjectUrl>
         <IsPublishable>True</IsPublishable>
+        <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
+        <AppxPackageDir>bin\publish\AppPackages</AppxPackageDir>
+        <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
+        <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
+        <AppxSymbolPackageEnabled>True</AppxSymbolPackageEnabled>
+        <GenerateTestArtifacts>True</GenerateTestArtifacts>
+        <AppxBundle>Auto</AppxBundle>
+        <AppxBundlePlatforms>x86|x64|arm64</AppxBundlePlatforms>
+        <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
     </PropertyGroup>
 
     <ItemGroup>
