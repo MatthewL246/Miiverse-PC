@@ -36,6 +36,7 @@
         <AppxBundle>Auto</AppxBundle>
         <AppxBundlePlatforms>x86|x64|arm64</AppxBundlePlatforms>
         <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
+        <Version>0.2.0</Version>
     </PropertyGroup>
 
     <ItemGroup>
