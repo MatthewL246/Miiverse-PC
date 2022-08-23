@@ -12,7 +12,7 @@
       Version="1.0.0.0" />
 
     <Properties>
-        <DisplayName>Miiverse-PC</DisplayName>
+        <DisplayName>Miiverse PC Client</DisplayName>
         <PublisherDisplayName>MatthewL246</PublisherDisplayName>
         <Logo>Assets\StoreLogo.png</Logo>
     </Properties>
@@ -31,8 +31,8 @@
           Executable="$targetnametoken$.exe"
           EntryPoint="$targetentrypoint$">
             <uap:VisualElements
-              DisplayName="Miiverse-PC"
-              Description="Miiverse PC Client"
+              DisplayName="Miiverse PC Client"
+              Description="A Miiverse portal client for PCs, specifically for Pretendo Juxtaposition"
               BackgroundColor="transparent"
               Square150x150Logo="Assets\Square150x150Logo.png"
               Square44x44Logo="Assets\Square44x44Logo.png">

@@ -19,6 +19,14 @@
         <ErrorReport>send</ErrorReport>
         <PackageCertificateThumbprint>428F9C7F9AC01E6AD06D38183C3D31065803D977</PackageCertificateThumbprint>
         <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
+        <Title>Miiverse PC Client</Title>
+        <Authors>MatthewL246</Authors>
+        <Description>A Miiverse portal client for PCs, specifically for Pretendo Juxtaposition</Description>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
+        <RepositoryUrl>https://github.com/MatthewL246/Miiverse-PC</RepositoryUrl>
+        <PackageProjectUrl>https://github.com/MatthewL246/Miiverse-PC</PackageProjectUrl>
+        <IsPublishable>True</IsPublishable>
     </PropertyGroup>
 
     <ItemGroup>
@@ -49,6 +57,16 @@
     <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
         <ProjectCapability Include="Msix" />
     </ItemGroup>
+    <ItemGroup>
+        <None Update="LICENSE">
+            <Pack>True</Pack>
+            <PackagePath>\</PackagePath>
+        </None>
+        <None Update="README.md">
+            <Pack>True</Pack>
+            <PackagePath>\</PackagePath>
+        </None>
+    </ItemGroup>
 
     <!--
     Defining the "HasPackageAndPublishMenuAddedByProject" property here allows the Solution
@@ -62,30 +80,36 @@
         <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
         <Deterministic>True</Deterministic>
         <DebugType>portable</DebugType>
+        <Optimize>False</Optimize>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
         <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
         <Deterministic>True</Deterministic>
         <DebugType>portable</DebugType>
+        <Optimize>True</Optimize>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
         <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
         <Deterministic>True</Deterministic>
         <DebugType>portable</DebugType>
+        <Optimize>False</Optimize>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
         <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
         <Deterministic>True</Deterministic>
         <DebugType>portable</DebugType>
+        <Optimize>True</Optimize>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|arm64'">
         <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
         <Deterministic>True</Deterministic>
         <DebugType>portable</DebugType>
+        <Optimize>False</Optimize>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|arm64'">
         <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
         <Deterministic>True</Deterministic>
         <DebugType>portable</DebugType>
+        <Optimize>True</Optimize>
     </PropertyGroup>
 </Project>
