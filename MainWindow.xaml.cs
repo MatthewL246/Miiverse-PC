@@ -12,6 +12,11 @@ namespace Miiverse_PC
         /// <summary>The current window's window handle.</summary>
         private readonly IntPtr hwnd;
 
+        /// <summary>
+        ///   The JavaScript code that is run on NavigationCompleted.
+        /// </summary>
+        private readonly string javascriptCode;
+
         /// <summary>The currently logged-in account.</summary>
         private Account? currentAccount;
 
@@ -24,6 +29,8 @@ namespace Miiverse_PC
             InitializeComponent();
             hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
             Title = "Miiverse PC Client";
+
+            javascriptCode = ReadJavascriptFile(@"js\portal.js");
 
             // Set up combo box bindings
             languageBox.ItemsSource = Enum.GetValues(typeof(LanguageId));
@@ -46,6 +53,39 @@ namespace Miiverse_PC
                 normalizedServer = "https://" + server;
             }
             return normalizedServer;
+        }
+
+        /// <summary>
+        ///   Reads JavaScript code from a file path relative to the current
+        ///   assembly and handles exceptions by returning a JavaScript alert
+        ///   containing the exception text.
+        /// </summary>
+        /// <param name="filePath">The relative file path of the code.</param>
+        /// <returns>
+        ///   A string containing the JavaScript code in the file or an alert
+        ///   containing exception info.
+        /// </returns>
+        private static string ReadJavascriptFile(string filePath)
+        {
+            try
+            {
+                var currentAssembly = System.Reflection.Assembly.GetEntryAssembly();
+                string? currentDirectory = Path.GetDirectoryName(currentAssembly?.Location);
+                return currentDirectory is null
+                    ? $"alert(\"Failed to get the current application directory.\\n Assembly: {currentAssembly}\\n Directory: {currentDirectory}\")"
+                    : File.ReadAllText(Path.Combine(currentDirectory, filePath));
+            }
+            catch (Exception ex)
+            {
+                // Basic string replacements that escape new lines, quotes, and
+                // backslashes inside the exception text to avoid syntax errors
+                string escapedEx = ex.ToString()
+                    .Replace("\\", "\\\\")
+                    .Replace(Environment.NewLine, "\\n\\n")
+                    .Replace("'", "\\'")
+                    .Replace("\"", "\\\"");
+                return $"alert(\"There was an error loading the JavaScript code at {filePath}: {escapedEx}\"); console.error(\"{escapedEx}\");";
+            }
         }
 
         /// <summary>
@@ -309,6 +349,7 @@ namespace Miiverse_PC
             await webView.EnsureCoreWebView2Async();
             webView.CoreWebView2.HistoryChanged += HistoryChangedHandler;
             webView.CoreWebView2.WebResourceRequested += MiiverseWebResourceRequestedHandler;
+            webView.NavigationCompleted += (sender, args) => _ = webView.ExecuteScriptAsync(javascriptCode);
         }
 
         /// <summary>Shows an error dialog over the window.</summary>
