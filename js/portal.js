@@ -43,6 +43,8 @@ if (document.readyState !== "loading") {
 
 function initInputs() {
     const hiddenImageInput = document.createElement("input");
+    hiddenImageInput.id = "hidden-image-file-input";
+    hiddenImageInput.style = "display: none;";
     hiddenImageInput.type = "file";
     hiddenImageInput.accept = "image/png";
 
@@ -55,19 +57,17 @@ function initInputs() {
         }
 
         // From juxt.js: sets the source of the screenshot preview images
-        document.getElementById("post-top-screen-preview").src =
-            "data:image/png;base64," +
-            window.wiiuMainApplication.getScreenShot(true);
-        document.getElementById("post-bottom-screen-preview").src =
-            "data:image/png;base64," +
-            window.wiiuMainApplication.getScreenShot(false);
+        try {
+            document.getElementById("post-top-screen-preview").src =
+                "data:image/png;base64," +
+                window.wiiuMainApplication.getScreenShot(true);
+            document.getElementById("post-bottom-screen-preview").src =
+                "data:image/png;base64," +
+                window.wiiuMainApplication.getScreenShot(false);
+        } catch (ex) {
+            console.log("Not currently on a Juxt community page.");
+        }
     };
 
-    const loadImageButton = document.createElement("button");
-    loadImageButton.innerHTML = "Select a screenshot to post";
-    loadImageButton.style = "font-size: 24px;";
-    loadImageButton.onclick = () => {
-        hiddenImageInput.click();
-    };
-    document.body.appendChild(loadImageButton);
+    document.body.appendChild(hiddenImageInput);
 }

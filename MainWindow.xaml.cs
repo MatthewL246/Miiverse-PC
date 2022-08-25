@@ -417,5 +417,14 @@ namespace Miiverse_PC
                 loginButton.IsEnabled = true;
             }
         }
+
+        /// <summary>
+        ///   Executes JavaScript to click on the hidden image input, opening a
+        ///   file explorer window to select am image to upload.
+        /// </summary>
+        private void UploadImage(object sender, RoutedEventArgs e)
+        {
+            _ = webView.ExecuteScriptAsync("document.getElementById('hidden-image-file-input').click();");
+        }
     }
 }

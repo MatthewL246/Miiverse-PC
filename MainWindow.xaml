@@ -93,6 +93,12 @@
             Loaded="SetupWebViewHandlersAsync" Source="https://portal.olv.pretendo.cc" />
 
         <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="5" Orientation="Horizontal">
+            <Button x:Name="uploadImageButton" Click="UploadImage">
+                <StackPanel Orientation="Horizontal">
+                    <SymbolIcon Margin="0,0,8,0" Symbol="Share" />
+                    <TextBlock Text="Select image to upload" />
+                </StackPanel>
+            </Button>
             <Button x:Name="userPage" Click="NavigateToPage" Content="Go to User Page" />
             <Button x:Name="userMenuPage" Click="NavigateToPage" Content="Go to User Menu" />
             <Button x:Name="activityFeedPage" Click="NavigateToPage" Content="Go to Activity Feed" />
