@@ -84,7 +84,7 @@
         <Button x:Name="forwardButton" Grid.Row="1" Grid.Column="1" Click="GoForward" IsEnabled="false">
             Forward
         </Button>
-        <Button x:Name="reloadButton" Grid.Row="1" Grid.Column="2" Click="Reload">
+        <Button x:Name="reloadButton" Grid.Row="1" Grid.Column="2" Click="ReloadOrStop">
             Reload
         </Button>
         <TextBox x:Name="addressBar" Grid.Row="1" Grid.Column="3" IsReadOnly="True" />

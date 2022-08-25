@@ -20,6 +20,9 @@ namespace Miiverse_PC
         /// <summary>The currently logged-in account.</summary>
         private Account? currentAccount;
 
+        /// <summary>If the WebView is navigating to a page.</summary>
+        private bool isWebViewNavigating = false;
+
         /// <summary>
         ///   Code that runs on initialization of the <see cref="MainWindow" />
         ///   class.
@@ -280,7 +283,7 @@ namespace Miiverse_PC
         ///   Handles WebResourceRequested events for the Miiverse portal from
         ///   the WebView.
         /// </summary>
-        private void MiiverseWebResourceRequestedHandler(object sender, CoreWebView2WebResourceRequestedEventArgs e)
+        private void MiiverseWebResourceRequestedHandler(CoreWebView2 sender, CoreWebView2WebResourceRequestedEventArgs e)
         {
             if (currentAccount is not null && currentAccount.IsSignedIn)
             {
@@ -335,10 +338,25 @@ namespace Miiverse_PC
             }
         }
 
-        /// <summary>Reloads the WebView.</summary>
-        private void Reload(object sender, RoutedEventArgs e)
+        /// <summary>Reload or stops loading the WebView.</summary>
+        private void ReloadOrStop(object sender, RoutedEventArgs e)
         {
-            webView.Reload();
+            try
+            {
+                if (isWebViewNavigating)
+                {
+                    webView.CoreWebView2.Stop();
+                }
+                else
+                {
+                    webView.Reload();
+                }
+            }
+            catch (InvalidOperationException ex)
+            {
+                // The WebView is not initialized, so the reload failed
+                _ = ShowErrorDialogAsync("Error: WebView not initialized", ex.ToString());
+            }
         }
 
         /// <summary>
@@ -347,9 +365,19 @@ namespace Miiverse_PC
         private async void SetupWebViewHandlersAsync(object sender, RoutedEventArgs e)
         {
             await webView.EnsureCoreWebView2Async();
+            webView.NavigationStarting += (sender, e) =>
+            {
+                reloadButton.Content = "Stop";
+                isWebViewNavigating = true;
+            };
+            webView.NavigationCompleted += (sender, e) =>
+            {
+                reloadButton.Content = "Reload";
+                isWebViewNavigating = false;
+            };
             webView.CoreWebView2.HistoryChanged += HistoryChangedHandler;
             webView.CoreWebView2.WebResourceRequested += MiiverseWebResourceRequestedHandler;
-            webView.NavigationCompleted += (sender, args) => _ = webView.ExecuteScriptAsync(javascriptCode);
+            webView.NavigationCompleted += (sender, e) => _ = webView.ExecuteScriptAsync(javascriptCode);
         }
 
         /// <summary>Shows an error dialog over the window.</summary>
