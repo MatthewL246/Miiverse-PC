@@ -172,6 +172,7 @@ namespace Miiverse_PC
         /// </summary>
         private async void LoginAsync(object sender, RoutedEventArgs e)
         {
+            // Check if inputs are valid
             if (string.IsNullOrWhiteSpace(username.Text) || string.IsNullOrWhiteSpace(passwordHash.Password))
             {
                 await ShowErrorDialogAsync
@@ -191,10 +192,16 @@ namespace Miiverse_PC
                 return;
             }
 
-            string currentStatus;
+            // Start login process
             UpdateLoginStatus(true);
 
-            if (!string.IsNullOrWhiteSpace(accountServer.Text))
+            // Process and normalize server names, setting defaults if empty
+            if (string.IsNullOrWhiteSpace(accountServer.Text))
+            {
+                accountServer.Text = defaultAccountServer;
+                discoveryServer.Text = defaultDiscoveryServer;
+            }
+            else
             {
                 accountServer.Text = NormalizeServerName(accountServer.Text);
 
@@ -205,69 +212,82 @@ namespace Miiverse_PC
 
                 discoveryServer.Text = NormalizeServerName(discoveryServer.Text);
             }
-            else
-            {
-                accountServer.Text = defaultAccountServer;
-                discoveryServer.Text = defaultDiscoveryServer;
-            }
 
+            // Create the account and account status string
             currentAccount = new(username.Text, passwordHash.Password, accountServer.Text, discoveryServer.Text);
-
-            if (!string.IsNullOrWhiteSpace(portalServer.Text))
-            {
-                portalServer.Text = NormalizeServerName(portalServer.Text);
-                currentAccount.MiiversePortalServer = portalServer.Text;
-            }
+            string currentError = "(No error)";
+            string currentStatus = "Starting login process";
 
             try
             {
                 var platform = (consoleSelect.SelectedItem as string) == "3DS" ? PlatformId.ThreeDS : PlatformId.WiiU;
 
+                // Login with password hash and receive OAuth2 token
                 currentStatus = await currentAccount.CreateOauth2TokenAsync();
                 if (currentAccount.OauthToken is null)
                 {
-                    await ShowErrorDialogAsync("Login failed", currentStatus);
-                    UpdateLoginStatus();
+                    currentError = "Login failed (OAuth2 token)";
                     return;
                 }
+
+                // Login with OAuth2 token and receive Miiverse service token
                 currentStatus = await currentAccount.CreateMiiverseTokenAsync();
                 if (currentAccount.MiiverseToken is null)
                 {
-                    await ShowErrorDialogAsync("Login failed", currentStatus);
-                    UpdateLoginStatus();
+                    currentError = "Login failed (Miiverse service token)";
                     return;
                 }
-                if (string.IsNullOrEmpty(currentAccount.MiiversePortalServer))
+
+                // If the Miiverse portal server has been set by the UI, use it.
+                // Otherwise, login with the Miiverse token and receive portal server
+                if (!string.IsNullOrWhiteSpace(portalServer.Text))
                 {
-                    // Only get the Miiverse portal server if it has not already
-                    // been set by the UI
+                    portalServer.Text = NormalizeServerName(portalServer.Text);
+                    currentAccount.MiiversePortalServer = portalServer.Text;
+                }
+                else
+                {
                     currentStatus = await currentAccount.GetMiiversePortalServerAsync(platform);
                     if (currentAccount.MiiversePortalServer is null)
                     {
-                        await ShowErrorDialogAsync("Login failed", currentStatus);
-                        UpdateLoginStatus();
+                        currentError = "Login failed (Miiverse portal server)";
                         return;
                     }
                 }
+
+                // Create the ParamPack data using the selected language and country
                 currentAccount.CreateParamPack((LanguageId)languageBox.SelectedItem, (CountryId)countryBox.SelectedItem, platform);
+
+                // At this point, account login has succeeded
+                currentStatus = "Successfully logged in.";
             }
             catch (HttpRequestException ex)
             {
-                await ShowErrorDialogAsync("Login failed (network error)", "The login failed because of a network error: " + ex.ToString());
+                currentError = "Login failed (network error)";
+                currentStatus = "The login failed because of a network error: " + ex.ToString();
             }
             catch (System.Xml.XmlException ex)
             {
-                await ShowErrorDialogAsync("Login failed (parse error)", "The login failed because the account server's response could not be parsed: " + ex.ToString());
+                currentError = "Login failed (parse error)";
+                currentStatus = "The login failed because the account server's response could not be parsed: " + ex.ToString();
             }
             catch (Exception ex)
             {
-                await ShowErrorDialogAsync("Login failed (unknown error)", "The login failed because of an unknown error: " + ex.ToString());
+                currentError = "Login failed (unknown error)";
+                currentStatus = "The login failed because of an unknown error: " + ex.ToString();
             }
             finally
             {
                 UpdateLoginStatus();
+
+                // Show error dialog if the login failed
+                if (!currentAccount.IsSignedIn)
+                {
+                    await ShowErrorDialogAsync(currentError, currentStatus).ConfigureAwait(false);
+                }
             }
 
+            // Set up the WebView if the login succeeded and no exceptions were thrown
             if (currentAccount.IsSignedIn)
             {
                 webView.CoreWebView2.AddWebResourceRequestedFilter($"{currentAccount.MiiversePortalServer}/*", CoreWebView2WebResourceContext.All);
@@ -279,7 +299,7 @@ namespace Miiverse_PC
                 }
                 catch (FormatException)
                 {
-                    await ShowErrorDialogAsync("Invalid Miiverse portal host", $"The Miiverse portal host (${currentAccount.MiiversePortalServer}) is not a valid URL.");
+                    await ShowErrorDialogAsync("Invalid Miiverse portal server", $"The Miiverse portal server (${currentAccount.MiiversePortalServer}) is not a valid URL.").ConfigureAwait(false);
                 }
             }
         }
