@@ -9,6 +9,16 @@ namespace Miiverse_PC
     /// <summary>The main window of the app.</summary>
     public sealed partial class MainWindow : Window
     {
+        /// <summary>
+        /// The default Pretendo account server (official).
+        /// </summary>
+        private const string defaultAccountServer = "https://account.pretendo.cc";
+
+        /// <summary>
+        /// The default Pretendo Miiverse discovery server (official).
+        /// </summary>
+        private const string defaultDiscoveryServer = "https://discovery.olv.pretendo.cc";
+
         /// <summary>The current window's window handle.</summary>
         private readonly IntPtr hwnd;
 
@@ -183,12 +193,10 @@ namespace Miiverse_PC
 
             string currentStatus;
             UpdateLoginStatus(true);
-            currentAccount = new(username.Text, passwordHash.Password);
 
             if (!string.IsNullOrWhiteSpace(accountServer.Text))
             {
                 accountServer.Text = NormalizeServerName(accountServer.Text);
-                currentAccount.AccountServer = accountServer.Text;
 
                 if (string.IsNullOrWhiteSpace(discoveryServer.Text))
                 {
@@ -196,8 +204,15 @@ namespace Miiverse_PC
                 }
 
                 discoveryServer.Text = NormalizeServerName(discoveryServer.Text);
-                currentAccount.MiiverseDiscoveryServer = discoveryServer.Text;
             }
+            else
+            {
+                accountServer.Text = defaultAccountServer;
+                discoveryServer.Text = defaultDiscoveryServer;
+            }
+
+            currentAccount = new(username.Text, passwordHash.Password, accountServer.Text, discoveryServer.Text);
+
             if (!string.IsNullOrWhiteSpace(portalServer.Text))
             {
                 portalServer.Text = NormalizeServerName(portalServer.Text);

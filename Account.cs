@@ -41,17 +41,19 @@ namespace Miiverse_PC
         /// <param name="passwordHash">
         ///   The PNID's password hash: <see cref="PnidPasswordHash" />
         /// </param>
-        public Account(string username, string passwordHash)
+        public Account(string username, string passwordHash, string accountServer, string miiverseDiscoveryServer)
         {
             PnidUsername = username;
             PnidPasswordHash = passwordHash;
+            AccountServer = accountServer;
+            MiiverseDiscoveryServer = miiverseDiscoveryServer;
         }
 
         /// <summary>
         ///   The protocol and domain or IP address of the account server that
         ///   will be sent OAuth 2.0 login requests.
         /// </summary>
-        public string AccountServer { get; set; } = "https://account.pretendo.cc";
+        public string AccountServer { get; }
 
         /// <summary>
         ///   Is true if account access token, Miiverse service token, Miiverse
@@ -63,7 +65,7 @@ namespace Miiverse_PC
         ///   The protocol and domain or IP address of the Miiverse discovery
         ///   server, which responds with the Miiverse portal host.
         /// </summary>
-        public string MiiverseDiscoveryServer { get; set; } = "https://discovery.olv.pretendo.cc";
+        public string MiiverseDiscoveryServer { get; }
 
         /// <summary>
         ///   The Miiverse Wii U portal host sent by the discovery server.
