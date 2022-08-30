@@ -7,7 +7,7 @@
   IgnorableNamespaces="uap rescap">
 
     <Identity
-      Name="31962e2d-8896-4b66-9eef-b475a66f06a4"
+      Name="Miiverse-PC"
       Publisher="CN=MatthewL246"
       Version="0.2.0.0" />
 
