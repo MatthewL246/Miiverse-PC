@@ -501,24 +501,24 @@ namespace Miiverse_PC
         /// <summary>Saves the current account's login info and settings.</summary>
         private async Task SaveAccountDataAsync()
         {
-            JsonObject accountDataObject = new()
-            {
-                ["username"] = username.Text,
-                ["password"] = passwordHash.Password,
-
-                ["accountServer"] = accountServer.Text,
-                ["discoveryServer"] = discoveryServer.Text,
-                ["portalServer"] = portalServer.Text,
-
-                ["languageId"] = (int?)languageBox.SelectedItem,
-                ["countryId"] = (int?)countryBox.SelectedItem,
-                ["console"] = (string?)consoleSelect.SelectedItem,
-            };
-
-            JsonSerializerOptions options = new() { WriteIndented = true };
-
             try
             {
+                JsonObject accountDataObject = new()
+                {
+                    ["username"] = username.Text,
+                    ["password"] = passwordHash.Password,
+
+                    ["accountServer"] = accountServer.Text,
+                    ["discoveryServer"] = discoveryServer.Text,
+                    ["portalServer"] = portalServer.Text,
+
+                    ["languageId"] = (int)languageBox.SelectedItem,
+                    ["countryId"] = (int)countryBox.SelectedItem,
+                    ["console"] = (string)consoleSelect.SelectedItem,
+                };
+
+                JsonSerializerOptions options = new() { WriteIndented = true };
+
                 await File.WriteAllTextAsync(accountDataJsonPath, accountDataObject.ToJsonString(options));
             }
             catch (Exception ex)
