@@ -389,13 +389,13 @@ namespace Miiverse_PC
         ///   Navigates the WebView to different Miiverse pages when a button is
         ///   pressed, depending on the button's name.
         /// </summary>
-        private void NavigateToPage(Button sender, RoutedEventArgs e)
+        private void NavigateToPage(object sender, RoutedEventArgs e)
         {
             if (currentAccount is not null && currentAccount.IsSignedIn)
             {
                 try
                 {
-                    switch (sender.Name)
+                    switch (((Button)sender).Name)
                     {
                         case "userPage":
                             webView.Source = new(currentAccount.MiiversePortalServer + "/users/me");
