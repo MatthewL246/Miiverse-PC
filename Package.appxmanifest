@@ -9,7 +9,7 @@
     <Identity
       Name="Miiverse-PC"
       Publisher="CN=MatthewL246"
-      Version="0.2.0.0" />
+      Version="0.3.0.0" />
 
     <Properties>
         <DisplayName>Miiverse PC Client</DisplayName>
