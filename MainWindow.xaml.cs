@@ -9,13 +9,11 @@ namespace Miiverse_PC
     /// <summary>The main window of the app.</summary>
     public sealed partial class MainWindow : Window
     {
-        /// <summary>
-        /// The default Pretendo account server (official).
-        /// </summary>
+        /// <summary>The default Pretendo account server (official).</summary>
         private const string defaultAccountServer = "https://account.pretendo.cc";
 
         /// <summary>
-        /// The default Pretendo Miiverse discovery server (official).
+        ///   The default Pretendo Miiverse discovery server (official).
         /// </summary>
         private const string defaultDiscoveryServer = "https://discovery.olv.pretendo.cc";
 
@@ -27,14 +25,14 @@ namespace Miiverse_PC
         /// </summary>
         private readonly string javascriptCode;
 
-        /// <summary>The local application settings container.</summary>
-        private readonly ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
-
         /// <summary>The currently logged-in account.</summary>
         private Account? currentAccount;
 
         /// <summary>If the WebView is navigating to a page.</summary>
         private bool isWebViewNavigating = false;
+
+        /// <summary>The local application settings container.</summary>
+        private ApplicationDataContainer? localSettings;
 
         /// <summary>
         ///   Code that runs on initialization of the <see cref="MainWindow" />
@@ -54,6 +52,16 @@ namespace Miiverse_PC
             countryBox.ItemsSource = Enum.GetValues(typeof(CountryId));
             countryBox.SelectedItem = CountryId.UnitedStates;
 
+            // Set up and restore storage
+            try
+            {
+                localSettings = ApplicationData.Current.LocalSettings;
+            }
+            catch (TypeInitializationException)
+            {
+                // App is running unpackaged, so localSettings cannot be used
+                localSettings = null;
+            }
             RestoreLoginInfo();
         }
 
@@ -111,8 +119,20 @@ namespace Miiverse_PC
         /// </summary>
         private void ClearLoginInfo()
         {
-            localSettings.Values.Clear();
-            localSettings.Values["saveLoginInfo"] = false;
+            if (localSettings is not null)
+            {
+                try
+                {
+                    localSettings.Values.Clear();
+                    localSettings.Values["saveLoginInfo"] = false;
+                }
+                catch (NotSupportedException)
+                {
+                    // Local settings are not working for some reason and should
+                    // be disabled
+                    localSettings = null;
+                }
+            }
         }
 
         /// <summary>
@@ -422,25 +442,37 @@ namespace Miiverse_PC
         /// <summary>Restores the stored login info and settings.</summary>
         private void RestoreLoginInfo()
         {
-            if (localSettings.Values["saveLoginInfo"] is null or false)
+            if (localSettings is not null)
             {
-                // Stored settings do not exist
-                return;
+                try
+                {
+                    if (localSettings.Values["saveLoginInfo"] is null or false)
+                    {
+                        // Stored settings do not exist
+                        return;
+                    }
+
+                    var settings = localSettings.Values;
+
+                    saveLoginInfo.IsChecked = true;
+                    username.Text = (string)settings["username"];
+                    passwordHash.Password = (string)settings["password"];
+
+                    accountServer.Text = (string)settings["accountServer"];
+                    discoveryServer.Text = (string)settings["discoveryServer"];
+                    portalServer.Text = (string)settings["portalServer"];
+
+                    languageBox.SelectedIndex = (int)settings["languageId"];
+                    countryBox.SelectedIndex = (int)settings["countryId"];
+                    consoleSelect.SelectedIndex = (int)settings["consoleId"];
+                }
+                catch (NotSupportedException)
+                {
+                    // Local settings are not working for some reason and should
+                    // be disabled
+                    localSettings = null;
+                }
             }
-
-            var settings = localSettings.Values;
-
-            saveLoginInfo.IsChecked = true;
-            username.Text = (string)settings["username"];
-            passwordHash.Password = (string)settings["password"];
-
-            accountServer.Text = (string)settings["accountServer"];
-            discoveryServer.Text = (string)settings["discoveryServer"];
-            portalServer.Text = (string)settings["portalServer"];
-
-            languageBox.SelectedIndex = (int)settings["languageId"];
-            countryBox.SelectedIndex = (int)settings["countryId"];
-            consoleSelect.SelectedIndex = (int)settings["consoleId"];
         }
 
         /// <summary>
@@ -448,20 +480,32 @@ namespace Miiverse_PC
         /// </summary>
         private void SaveLoginInfo()
         {
-            var settings = localSettings.Values;
+            if (localSettings is not null)
+            {
+                try
+                {
+                    var settings = localSettings.Values;
 
-            settings["username"] = username.Text;
-            settings["password"] = passwordHash.Password;
+                    settings["username"] = username.Text;
+                    settings["password"] = passwordHash.Password;
 
-            settings["accountServer"] = accountServer.Text;
-            settings["discoveryServer"] = discoveryServer.Text;
-            settings["portalServer"] = portalServer.Text;
+                    settings["accountServer"] = accountServer.Text;
+                    settings["discoveryServer"] = discoveryServer.Text;
+                    settings["portalServer"] = portalServer.Text;
 
-            settings["languageId"] = languageBox.SelectedIndex;
-            settings["countryId"] = countryBox.SelectedIndex;
-            settings["consoleId"] = consoleSelect.SelectedIndex;
+                    settings["languageId"] = languageBox.SelectedIndex;
+                    settings["countryId"] = countryBox.SelectedIndex;
+                    settings["consoleId"] = consoleSelect.SelectedIndex;
 
-            settings["saveLoginInfo"] = true;
+                    settings["saveLoginInfo"] = true;
+                }
+                catch (NotSupportedException)
+                {
+                    // Local settings are not working for some reason and should
+                    // be disabled
+                    localSettings = null;
+                }
+            }
         }
 
         /// <summary>
