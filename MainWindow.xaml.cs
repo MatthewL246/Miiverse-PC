@@ -1,4 +1,6 @@
-﻿using Microsoft.UI.Xaml;
+﻿using System.Text.Json;
+using System.Text.Json.Nodes;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Web.WebView2.Core;
 using Windows.Storage;
@@ -12,17 +14,16 @@ namespace Miiverse_PC
         /// <summary>The default Pretendo account server (official).</summary>
         private const string defaultAccountServer = "https://account.pretendo.cc";
 
-        /// <summary>
-        ///   The default Pretendo Miiverse discovery server (official).
-        /// </summary>
+        /// <summary>The default Pretendo Miiverse discovery server (official).</summary>
         private const string defaultDiscoveryServer = "https://discovery.olv.pretendo.cc";
+
+        /// <summary>The path where account data is stored as JSON.</summary>
+        private readonly string accountDataJsonPath;
 
         /// <summary>The current window's window handle.</summary>
         private readonly IntPtr hwnd;
 
-        /// <summary>
-        ///   The JavaScript code that is run on NavigationCompleted.
-        /// </summary>
+        /// <summary>The JavaScript code that is run on NavigationCompleted.</summary>
         private readonly string javascriptCode;
 
         /// <summary>The currently logged-in account.</summary>
@@ -31,12 +32,8 @@ namespace Miiverse_PC
         /// <summary>If the WebView is navigating to a page.</summary>
         private bool isWebViewNavigating = false;
 
-        /// <summary>The local application settings container.</summary>
-        private ApplicationDataContainer? localSettings;
-
         /// <summary>
-        ///   Code that runs on initialization of the <see cref="MainWindow" />
-        ///   class.
+        ///   Code that runs on initialization of the <see cref="MainWindow" /> class.
         /// </summary>
         public MainWindow()
         {
@@ -55,14 +52,20 @@ namespace Miiverse_PC
             // Set up and restore storage
             try
             {
-                localSettings = ApplicationData.Current.LocalSettings;
+                accountDataJsonPath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "accountData.json");
             }
-            catch (TypeInitializationException)
+            catch (InvalidOperationException)
             {
-                // App is running unpackaged, so localSettings cannot be used
-                localSettings = null;
+                // The app is running unpackaged, so LocalFolder cannot be used
+                // Use the program's folder instead or fall back to the current
+                // working directory
+                var currentAssembly = System.Reflection.Assembly.GetEntryAssembly();
+                string? currentDirectory = Path.GetDirectoryName(currentAssembly?.Location);
+                accountDataJsonPath = currentDirectory is not null
+                    ? Path.Combine(currentDirectory, "accountData.json")
+                    : Path.Combine(Environment.CurrentDirectory, "accountData.json");
             }
-            RestoreLoginInfo();
+            LoadAccountData();
         }
 
         /// <summary>
@@ -114,24 +117,16 @@ namespace Miiverse_PC
             }
         }
 
-        /// <summary>
-        ///   Clears the stored login info and disables saving.
-        /// </summary>
-        private void ClearLoginInfo()
+        /// <summary>Clears the stored account data asynchronously.</summary>
+        private async Task ClearAccountDataAsync()
         {
-            if (localSettings is not null)
+            try
             {
-                try
-                {
-                    localSettings.Values.Clear();
-                    localSettings.Values["saveLoginInfo"] = false;
-                }
-                catch (NotSupportedException)
-                {
-                    // Local settings are not working for some reason and should
-                    // be disabled
-                    localSettings = null;
-                }
+                File.Delete(accountDataJsonPath);
+            }
+            catch (Exception ex)
+            {
+                await ShowErrorDialogAsync("Failed to delete account data", ex.ToString());
             }
         }
 
@@ -201,9 +196,44 @@ namespace Miiverse_PC
             addressBar.Text = sender.Source;
         }
 
-        /// <summary>
-        ///   Logs in as a PNID with a username and password hash.
-        /// </summary>
+        /// <summary>Loads the stored account data and settings.</summary>
+        private void LoadAccountData()
+        {
+            try
+            {
+                // TODO: Test in packaged build, fix warnings and possible
+                // NullReferenceExceptions, and find a better way to load this
+                // with less casting
+                if (!File.Exists(accountDataJsonPath))
+                {
+                    // If the file does not exist, there is nothing to load
+                    return;
+                }
+
+                string jsonData = File.ReadAllText(accountDataJsonPath);
+
+                var accountNode = JsonNode.Parse(jsonData);
+
+                username.Text = (string)accountNode["username"];
+                passwordHash.Password = (string)accountNode["password"];
+
+                accountServer.Text = (string)accountNode["accountServer"];
+                discoveryServer.Text = (string)accountNode["discoveryServer"];
+                portalServer.Text = (string)accountNode["portalServer"];
+
+                languageBox.SelectedItem = (LanguageId)(int)accountNode["languageId"];
+                countryBox.SelectedItem = (CountryId)(int)accountNode["countryId"];
+                consoleSelect.SelectedItem = (string)accountNode["console"] ?? "Wii U";
+
+                saveLoginInfo.IsChecked = true;
+            }
+            catch (Exception ex)
+            {
+                _ = ShowErrorDialogAsync("Failed to load saved account data", ex.ToString());
+            }
+        }
+
+        /// <summary>Logs in as a PNID with a username and password hash.</summary>
         private async void LoginAsync(object sender, RoutedEventArgs e)
         {
             // Check if inputs are valid
@@ -255,11 +285,11 @@ namespace Miiverse_PC
             // Save or clear the stored login info
             if (saveLoginInfo.IsChecked == true)
             {
-                SaveLoginInfo();
+                await SaveAccountDataAsync();
             }
             else
             {
-                ClearLoginInfo();
+                await ClearAccountDataAsync();
             }
 
             try
@@ -454,72 +484,32 @@ namespace Miiverse_PC
             }
         }
 
-        /// <summary>Restores the stored login info and settings.</summary>
-        private void RestoreLoginInfo()
+        /// <summary>Saves the current account's login info and settings.</summary>
+        private async Task SaveAccountDataAsync()
         {
-            if (localSettings is not null)
+            JsonObject accountDataObject = new()
             {
-                try
-                {
-                    if (localSettings.Values["saveLoginInfo"] is null or false)
-                    {
-                        // Stored settings do not exist
-                        return;
-                    }
+                ["username"] = username.Text,
+                ["password"] = passwordHash.Password,
 
-                    var settings = localSettings.Values;
+                ["accountServer"] = accountServer.Text,
+                ["discoveryServer"] = discoveryServer.Text,
+                ["portalServer"] = portalServer.Text,
 
-                    saveLoginInfo.IsChecked = true;
-                    username.Text = (string)settings["username"];
-                    passwordHash.Password = (string)settings["password"];
+                ["languageId"] = (int)languageBox.SelectedItem,
+                ["countryId"] = (int)countryBox.SelectedItem,
+                ["console"] = (string)consoleSelect.SelectedItem,
+            };
 
-                    accountServer.Text = (string)settings["accountServer"];
-                    discoveryServer.Text = (string)settings["discoveryServer"];
-                    portalServer.Text = (string)settings["portalServer"];
+            JsonSerializerOptions options = new() { WriteIndented = true };
 
-                    languageBox.SelectedIndex = (int)settings["languageId"];
-                    countryBox.SelectedIndex = (int)settings["countryId"];
-                    consoleSelect.SelectedIndex = (int)settings["consoleId"];
-                }
-                catch (NotSupportedException)
-                {
-                    // Local settings are not working for some reason and should
-                    // be disabled
-                    localSettings = null;
-                }
+            try
+            {
+                await File.WriteAllTextAsync(accountDataJsonPath, accountDataObject.ToJsonString(options));
             }
-        }
-
-        /// <summary>
-        ///   Saves the current account's login info and settings.
-        /// </summary>
-        private void SaveLoginInfo()
-        {
-            if (localSettings is not null)
+            catch (Exception ex)
             {
-                try
-                {
-                    var settings = localSettings.Values;
-
-                    settings["username"] = username.Text;
-                    settings["password"] = passwordHash.Password;
-
-                    settings["accountServer"] = accountServer.Text;
-                    settings["discoveryServer"] = discoveryServer.Text;
-                    settings["portalServer"] = portalServer.Text;
-
-                    settings["languageId"] = languageBox.SelectedIndex;
-                    settings["countryId"] = countryBox.SelectedIndex;
-                    settings["consoleId"] = consoleSelect.SelectedIndex;
-
-                    settings["saveLoginInfo"] = true;
-                }
-                catch (NotSupportedException)
-                {
-                    // Local settings are not working for some reason and should
-                    // be disabled
-                    localSettings = null;
-                }
+                await ShowErrorDialogAsync("Failed to save account data", ex.ToString());
             }
         }
 
