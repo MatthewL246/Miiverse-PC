@@ -342,9 +342,13 @@ namespace Miiverse_PC
                     // Account.IsSignedIn being true
                     webView.Source = new(currentAccount.MiiversePortalServer!);
                 }
-                catch (FormatException)
+                catch (UriFormatException ex)
                 {
-                    await ShowErrorDialogAsync("Invalid Miiverse portal server", $"The Miiverse portal server (${currentAccount.MiiversePortalServer}) is not a valid URL.").ConfigureAwait(false);
+                    await ShowErrorDialogAsync
+                    (
+                        "Invalid Miiverse portal server",
+                        $"The Miiverse portal server (${currentAccount.MiiversePortalServer}) is not a valid URL.\n{ex}"
+                    ).ConfigureAwait(false);
                 }
             }
         }
@@ -385,35 +389,46 @@ namespace Miiverse_PC
         ///   Navigates the WebView to different Miiverse pages when a button is
         ///   pressed, depending on the button's name.
         /// </summary>
-        private void NavigateToPage(object sender, RoutedEventArgs e)
+        private void NavigateToPage(Button sender, RoutedEventArgs e)
         {
             if (currentAccount is not null && currentAccount.IsSignedIn)
             {
-                switch (((Button)sender).Name)
+                try
                 {
-                    case "userPage":
-                        webView.Source = new(currentAccount.MiiversePortalServer + "/users/me");
-                        break;
+                    switch (sender.Name)
+                    {
+                        case "userPage":
+                            webView.Source = new(currentAccount.MiiversePortalServer + "/users/me");
+                            break;
 
-                    case "userMenuPage":
-                        webView.Source = new(currentAccount.MiiversePortalServer + "/users/menu");
-                        break;
+                        case "userMenuPage":
+                            webView.Source = new(currentAccount.MiiversePortalServer + "/users/menu");
+                            break;
 
-                    case "activityFeedPage":
-                        webView.Source = new(currentAccount.MiiversePortalServer + "/activity-feed");
-                        break;
+                        case "activityFeedPage":
+                            webView.Source = new(currentAccount.MiiversePortalServer + "/activity-feed");
+                            break;
 
-                    case "communitiesPage":
-                        webView.Source = new(currentAccount.MiiversePortalServer + "/communities");
-                        break;
+                        case "communitiesPage":
+                            webView.Source = new(currentAccount.MiiversePortalServer + "/communities");
+                            break;
 
-                    case "messagesPage":
-                        webView.Source = new(currentAccount.MiiversePortalServer + "/messages");
-                        break;
+                        case "messagesPage":
+                            webView.Source = new(currentAccount.MiiversePortalServer + "/messages");
+                            break;
 
-                    case "notificationsPage":
-                        webView.Source = new(currentAccount.MiiversePortalServer + "/news");
-                        break;
+                        case "notificationsPage":
+                            webView.Source = new(currentAccount.MiiversePortalServer + "/news");
+                            break;
+                    }
+                }
+                catch (UriFormatException ex)
+                {
+                    _ = ShowErrorDialogAsync
+                    (
+                        "Invalid Miiverse portal server",
+                        $"The Miiverse portal server (${currentAccount.MiiversePortalServer}) is not a valid URL.\n{ex}"
+                    );
                 }
             }
         }
