@@ -27,6 +27,9 @@ namespace Miiverse_PC
         /// </summary>
         private readonly string javascriptCode;
 
+        /// <summary>The local application settings container.</summary>
+        private readonly ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
+
         /// <summary>The currently logged-in account.</summary>
         private Account? currentAccount;
 
@@ -50,6 +53,8 @@ namespace Miiverse_PC
             languageBox.SelectedItem = LanguageId.English;
             countryBox.ItemsSource = Enum.GetValues(typeof(CountryId));
             countryBox.SelectedItem = CountryId.UnitedStates;
+
+            RestoreLoginInfo();
         }
 
         /// <summary>
@@ -99,6 +104,15 @@ namespace Miiverse_PC
                     .Replace("\"", "\\\"");
                 return $"alert(\"There was an error loading the JavaScript code at {filePath}: {escapedEx}\"); console.error(\"{escapedEx}\");";
             }
+        }
+
+        /// <summary>
+        ///   Clears the stored login info and disables saving.
+        /// </summary>
+        private void ClearLoginInfo()
+        {
+            localSettings.Values.Clear();
+            localSettings.Values["saveLoginInfo"] = false;
         }
 
         /// <summary>
@@ -218,6 +232,16 @@ namespace Miiverse_PC
             string currentError = "(No error)";
             string currentStatus = "Starting login process";
 
+            // Save or clear the stored login info
+            if (saveLoginInfo.IsChecked == true)
+            {
+                SaveLoginInfo();
+            }
+            else
+            {
+                ClearLoginInfo();
+            }
+
             try
             {
                 var platform = (consoleSelect.SelectedItem as string) == "3DS" ? PlatformId.ThreeDS : PlatformId.WiiU;
@@ -287,7 +311,8 @@ namespace Miiverse_PC
                 }
             }
 
-            // Set up the WebView if the login succeeded and no exceptions were thrown
+            // Set up the WebView and save login info if the login succeeded and
+            // no exceptions were thrown
             if (currentAccount.IsSignedIn)
             {
                 webView.CoreWebView2.AddWebResourceRequestedFilter($"{currentAccount.MiiversePortalServer}/*", CoreWebView2WebResourceContext.All);
@@ -392,6 +417,51 @@ namespace Miiverse_PC
                 // The WebView is not initialized, so the reload failed
                 _ = ShowErrorDialogAsync("Error: WebView not initialized", ex.ToString());
             }
+        }
+
+        /// <summary>Restores the stored login info and settings.</summary>
+        private void RestoreLoginInfo()
+        {
+            if (localSettings.Values["saveLoginInfo"] is null or false)
+            {
+                // Stored settings do not exist
+                return;
+            }
+
+            var settings = localSettings.Values;
+
+            saveLoginInfo.IsChecked = true;
+            username.Text = (string)settings["username"];
+            passwordHash.Password = (string)settings["password"];
+
+            accountServer.Text = (string)settings["accountServer"];
+            discoveryServer.Text = (string)settings["discoveryServer"];
+            portalServer.Text = (string)settings["portalServer"];
+
+            languageBox.SelectedIndex = (int)settings["languageId"];
+            countryBox.SelectedIndex = (int)settings["countryId"];
+            consoleSelect.SelectedIndex = (int)settings["consoleId"];
+        }
+
+        /// <summary>
+        ///   Saves the current account's login info and settings.
+        /// </summary>
+        private void SaveLoginInfo()
+        {
+            var settings = localSettings.Values;
+
+            settings["username"] = username.Text;
+            settings["password"] = passwordHash.Password;
+
+            settings["accountServer"] = accountServer.Text;
+            settings["discoveryServer"] = discoveryServer.Text;
+            settings["portalServer"] = portalServer.Text;
+
+            settings["languageId"] = languageBox.SelectedIndex;
+            settings["countryId"] = countryBox.SelectedIndex;
+            settings["consoleId"] = consoleSelect.SelectedIndex;
+
+            settings["saveLoginInfo"] = true;
         }
 
         /// <summary>
