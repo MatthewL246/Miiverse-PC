@@ -65,7 +65,8 @@ namespace Miiverse_PC
                     ? Path.Combine(currentDirectory, "accountData.json")
                     : Path.Combine(Environment.CurrentDirectory, "accountData.json");
             }
-            LoadAccountData();
+
+            _ = LoadAccountDataAsync();
         }
 
         /// <summary>
@@ -196,40 +197,53 @@ namespace Miiverse_PC
             addressBar.Text = sender.Source;
         }
 
-        /// <summary>Loads the stored account data and settings.</summary>
-        private void LoadAccountData()
+        /// <summary>Loads the stored account data and settings asynchronously.</summary>
+        private async Task LoadAccountDataAsync()
         {
             try
             {
-                // TODO: Test in packaged build, fix warnings and possible
-                // NullReferenceExceptions, and find a better way to load this
-                // with less casting
                 if (!File.Exists(accountDataJsonPath))
                 {
                     // If the file does not exist, there is nothing to load
                     return;
                 }
 
-                string jsonData = File.ReadAllText(accountDataJsonPath);
+                string jsonData = await File.ReadAllTextAsync(accountDataJsonPath);
 
-                var accountNode = JsonNode.Parse(jsonData);
+                if (string.IsNullOrWhiteSpace(jsonData))
+                {
+                    // Or if the file is empty
+                    return;
+                }
 
-                username.Text = (string)accountNode["username"];
-                passwordHash.Password = (string)accountNode["password"];
+                var accountNode = JsonNode.Parse(jsonData)!;
 
-                accountServer.Text = (string)accountNode["accountServer"];
-                discoveryServer.Text = (string)accountNode["discoveryServer"];
-                portalServer.Text = (string)accountNode["portalServer"];
+                // Values can safely be null and get converted an empty string
+                username.Text = accountNode["username"]?.ToString();
+                passwordHash.Password = accountNode["password"]?.ToString();
 
-                languageBox.SelectedItem = (LanguageId)(int)accountNode["languageId"];
-                countryBox.SelectedItem = (CountryId)(int)accountNode["countryId"];
-                consoleSelect.SelectedItem = (string)accountNode["console"] ?? "Wii U";
+                accountServer.Text = accountNode["accountServer"]?.ToString();
+                discoveryServer.Text = accountNode["discoveryServer"]?.ToString();
+                portalServer.Text = accountNode["portalServer"]?.ToString();
+
+                // Values that need to have defaults if null
+                languageBox.SelectedItem = (LanguageId?)(int?)accountNode["languageId"] ?? LanguageId.English;
+                countryBox.SelectedItem = (CountryId?)(int?)accountNode["countryId"] ?? CountryId.UnitedStates;
+                consoleSelect.SelectedItem = (string?)accountNode["console"] ?? "Wii U";
 
                 saveLoginInfo.IsChecked = true;
             }
             catch (Exception ex)
             {
-                _ = ShowErrorDialogAsync("Failed to load saved account data", ex.ToString());
+                // Need to wait until the main window is loaded before showing
+                // the error due to Content.XamlRoot being null
+                await Task.Delay(500);
+                await ShowErrorDialogAsync
+                (
+                    "Failed to load the saved account data",
+                    "The saved data will be automatically deleted.\n\n" + ex.ToString()
+                ).ConfigureAwait(false);
+                await ClearAccountDataAsync().ConfigureAwait(false);
             }
         }
 
@@ -496,9 +510,9 @@ namespace Miiverse_PC
                 ["discoveryServer"] = discoveryServer.Text,
                 ["portalServer"] = portalServer.Text,
 
-                ["languageId"] = (int)languageBox.SelectedItem,
-                ["countryId"] = (int)countryBox.SelectedItem,
-                ["console"] = (string)consoleSelect.SelectedItem,
+                ["languageId"] = (int?)languageBox.SelectedItem,
+                ["countryId"] = (int?)countryBox.SelectedItem,
+                ["console"] = (string?)consoleSelect.SelectedItem,
             };
 
             JsonSerializerOptions options = new() { WriteIndented = true };
