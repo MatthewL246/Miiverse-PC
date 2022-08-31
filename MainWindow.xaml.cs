@@ -287,16 +287,6 @@ namespace Miiverse_PC
             string currentError = "(No error)";
             string currentStatus = "Starting login process";
 
-            // Save or clear the stored login info
-            if (saveLoginInfo.IsChecked == true)
-            {
-                await SaveAccountDataAsync();
-            }
-            else
-            {
-                await ClearAccountDataAsync();
-            }
-
             try
             {
                 var platform = (consoleSelect.SelectedItem as string) == "3DS" ? PlatformId.ThreeDS : PlatformId.WiiU;
@@ -373,6 +363,16 @@ namespace Miiverse_PC
                 {
                     await ShowErrorDialogAsync(currentError, currentStatus).ConfigureAwait(false);
                 }
+            }
+
+            // Save or clear the stored login info
+            if (saveLoginInfo.IsChecked == true)
+            {
+                await SaveAccountDataAsync();
+            }
+            else
+            {
+                await ClearAccountDataAsync();
             }
 
             // Set up the WebView and save login info if the login succeeded and
@@ -505,8 +505,8 @@ namespace Miiverse_PC
             {
                 JsonObject accountDataObject = new()
                 {
-                    ["username"] = username.Text,
-                    ["password"] = passwordHash.Password,
+                    ["username"] = currentAccount?.PnidUsername,
+                    ["password"] = currentAccount?.PnidPasswordHash,
 
                     ["accountServer"] = accountServer.Text,
                     ["discoveryServer"] = discoveryServer.Text,
