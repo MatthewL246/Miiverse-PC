@@ -260,15 +260,6 @@ namespace Miiverse_PC
                 ).ConfigureAwait(false);
                 return;
             }
-            if (passwordHash.Password.Length != 64)
-            {
-                await ShowErrorDialogAsync
-                (
-                    "Invalid password hash",
-                    "The password hash is not the correct length. Make sure to only copy and paste the 64-character hash."
-                ).ConfigureAwait(false);
-                return;
-            }
 
             // Start login process
             UpdateLoginStatus(true);
@@ -309,6 +300,15 @@ namespace Miiverse_PC
             try
             {
                 var platform = (consoleSelect.SelectedItem as string) == "3DS" ? PlatformId.ThreeDS : PlatformId.WiiU;
+
+                // Hash the password if necessary
+                await currentAccount.HashPnidPasswordAsync();
+                if (currentAccount.PnidPasswordHash is null)
+                {
+                    currentError = "Login failed (password hash)";
+                    currentStatus = $"The PNID username {currentAccount.PnidUsername} does not exist on the server.";
+                    return;
+                }
 
                 // Login with password hash and receive OAuth2 token
                 currentStatus = await currentAccount.CreateOauth2TokenAsync();
