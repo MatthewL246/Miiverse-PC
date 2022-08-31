@@ -43,7 +43,7 @@
                 </TextBlock>
                 <TextBox x:Name="username" Grid.Row="0" Grid.Column="1" MaxWidth="200" Margin="8" KeyDown="MoveToPasswordOnEnter"
                     PlaceholderText="Enter PNID username here" />
-                <PasswordBox x:Name="passwordHash" Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" MaxWidth="400" Margin="8" KeyDown="LoginOnEnter"
+                <PasswordBox x:Name="password" Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" MaxWidth="400" Margin="8" KeyDown="LoginOnEnter"
                     PlaceholderText="Paste PNID password hash here" />
                 <Button x:Name="loginButton" Grid.Row="0" Grid.Column="4" Margin="8" Click="LoginAsync">
                     Login

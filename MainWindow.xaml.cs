@@ -220,7 +220,7 @@ namespace Miiverse_PC
 
                 // Values can safely be null and get converted an empty string
                 username.Text = accountNode["username"]?.ToString();
-                passwordHash.Password = accountNode["password"]?.ToString();
+                password.Password = accountNode["passwordHash"]?.ToString();
 
                 accountServer.Text = accountNode["accountServer"]?.ToString();
                 discoveryServer.Text = accountNode["discoveryServer"]?.ToString();
@@ -251,7 +251,7 @@ namespace Miiverse_PC
         private async void LoginAsync(object sender, RoutedEventArgs e)
         {
             // Check if inputs are valid
-            if (string.IsNullOrWhiteSpace(username.Text) || string.IsNullOrWhiteSpace(passwordHash.Password))
+            if (string.IsNullOrWhiteSpace(username.Text) || string.IsNullOrWhiteSpace(password.Password))
             {
                 await ShowErrorDialogAsync
                 (
@@ -283,7 +283,7 @@ namespace Miiverse_PC
             }
 
             // Create the account and account status string
-            currentAccount = new(username.Text, passwordHash.Password, accountServer.Text, discoveryServer.Text);
+            currentAccount = new(username.Text, password.Password, accountServer.Text, discoveryServer.Text);
             string currentError = "(No error)";
             string currentStatus = "Starting login process";
 
@@ -425,7 +425,7 @@ namespace Miiverse_PC
         {
             if (e.Key == VirtualKey.Enter)
             {
-                passwordHash.Focus(FocusState.Programmatic);
+                password.Focus(FocusState.Programmatic);
             }
         }
 
@@ -506,7 +506,7 @@ namespace Miiverse_PC
                 JsonObject accountDataObject = new()
                 {
                     ["username"] = currentAccount?.PnidUsername,
-                    ["password"] = currentAccount?.PnidPasswordHash,
+                    ["passwordHash"] = currentAccount?.PnidPasswordHash,
 
                     ["accountServer"] = accountServer.Text,
                     ["discoveryServer"] = discoveryServer.Text,
