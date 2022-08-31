@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Security.Cryptography;
 using System.Text;
 using System.Xml;
 
@@ -317,6 +318,28 @@ namespace Miiverse_PC
                 $"HTTP error code: {(int)httpStatus} {httpStatus}\n" +
                 $"Server error code: {errorCode}\n" +
                 $"Server error message: {errorMessage}";
+        }
+
+        /// <summary>
+        ///   Computes a password hash using the same algorithm that Nintendo
+        ///   consoles and servers use. Requires a PID as well as the password.
+        /// </summary>
+        /// <param name="pid">The PID of the account that is using the password.</param>
+        /// <param name="password">The password of the account.</param>
+        /// <returns>The computed hash as a string in hex format.</returns>
+        private static string NintendoPasswordHash(uint pid, string password)
+        {
+            // See https://github.com/PretendoNetwork/account/blob/957fbaa395db994b3c23bd01fd2cd953031f7f5d/src/util.js#L14
+            byte[] pidBytes = BitConverter.GetBytes(pid);
+            byte[] magicBytes = new byte[] { 0x02, 0x65, 0x43, 0x46 };
+            byte[] passwordBytes = Encoding.UTF8.GetBytes(password);
+
+            byte[] hashBytes = pidBytes.Concat(magicBytes).Concat(passwordBytes).ToArray();
+            var hash = SHA256.Create();
+            hash.ComputeHash(hashBytes);
+
+            // Hash has been computed, return as hex string
+            return Convert.ToHexString(hash.Hash!).ToLower();
         }
     }
 }
