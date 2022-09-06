@@ -18,7 +18,7 @@
         </Grid.ColumnDefinitions>
 
         <Expander x:Name="loginArea" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="5" Margin="8" HorizontalAlignment="Stretch"
-            Header="Login status: Not logged in (click to expand)">
+                  Header="Login status: Not logged in (click to expand)">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
@@ -35,13 +35,13 @@
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" FontSize="16" FontWeight="Bold"
-                    ToolTipService.ToolTip="These options are simply the credentials used to log into your Pretendo account.">
+                           ToolTipService.ToolTip="These options are simply the credentials used to log into your Pretendo account.">
                     Login information:
                 </TextBlock>
                 <TextBox x:Name="username" Grid.Row="0" Grid.Column="1" MaxWidth="200" Margin="8" KeyDown="MoveToPasswordOnEnter"
-                    PlaceholderText="Enter PNID username here" />
+                         PlaceholderText="Enter PNID username here" />
                 <PasswordBox x:Name="password" Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" MaxWidth="400" Margin="8" KeyDown="LoginOnEnter"
-                    PlaceholderText="Enter PNID password here" />
+                             PlaceholderText="Enter PNID password here" />
                 <Button x:Name="loginButton" Grid.Row="0" Grid.Column="4" Margin="8" Click="LoginAsync">
                     Login
                 </Button>
@@ -50,33 +50,36 @@
                 </CheckBox>
 
                 <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" FontSize="16" FontWeight="Bold"
-                    ToolTipService.ToolTip="These options control what Pretendo server to connect to. By default, Pretendo's official servers are used, and the portal host is downloaded from the discovery server. If only the account server is specified, the account server is also used as the discovery server. Specifying an alternate portal host skips using the discovery server.">
+                           ToolTipService.ToolTip="These options control what Pretendo server to connect to. By default, Pretendo's official servers are used, and the portal host is downloaded from the discovery server. If only the account server is specified, the account server is also used as the discovery server. Specifying an alternate portal host skips using the discovery server.">
                     Server options:<LineBreak />
                     <Run FontSize="12">(All optional)</Run>
                 </TextBlock>
                 <TextBox x:Name="accountServer" Grid.Row="1" Grid.Column="1" MaxWidth="200" Margin="8" KeyDown="LoginOnEnter"
-                    PlaceholderText="Account server" />
+                         PlaceholderText="Account server" />
                 <TextBox x:Name="discoveryServer" Grid.Row="1" Grid.Column="2" MaxWidth="200" Margin="8" KeyDown="LoginOnEnter"
-                    PlaceholderText="Miiverse discovery server" />
+                         PlaceholderText="Miiverse discovery server" />
                 <TextBox x:Name="portalServer" Grid.Row="1" Grid.Column="3" MaxWidth="200" Margin="8" KeyDown="LoginOnEnter"
-                    PlaceholderText="Miiverse portal server" />
+                         PlaceholderText="Miiverse portal server" />
                 <Button x:Name="downloadButton" Grid.Row="1" Grid.Column="4" Grid.ColumnSpan="2" Margin="8" Click="DownloadUserProfileDataAsync">
                     Download user profile data
                 </Button>
 
                 <TextBlock Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" FontSize="16" FontWeight="Bold"
-                    ToolTipService.ToolTip="Important note: the language and country options do not currently have any effect besides setting a value in the database. However, Juxt will most likely use these values for localization in the future.">
+                           ToolTipService.ToolTip="Important note: the language and country options do not currently have any effect besides setting a value in the database. However, Juxt will most likely use these values for localization in the future.">
                     Login options:<LineBreak />
                     <Run FontSize="12">(Hover over option</Run><LineBreak />
                     <Run FontSize="12">categories for more info)</Run>
                 </TextBlock>
                 <ComboBox x:Name="languageBox" Grid.Row="2" Grid.Column="1" Margin="8" Header="Miiverse language" Text="Select language" />
                 <ComboBox x:Name="countryBox" Grid.Row="2" Grid.Column="2" Margin="8" Header="Console country" Text="Select country" />
-                <RadioButtons x:Name="consoleSelect" Grid.Row="2" Grid.Column="3" Grid.ColumnSpan="3"
-                    Header="Select console (Wii U recommended, 3DS is unstable)" MaxColumns="2" SelectedIndex="0">
+                <RadioButtons x:Name="consoleSelect" Grid.Row="2" Grid.Column="3" Grid.ColumnSpan="2"
+                              Header="Select console (Wii U recommended, 3DS is unstable)" MaxColumns="2" SelectedIndex="0">
                     <x:String>Wii U</x:String>
                     <x:String>3DS</x:String>
                 </RadioButtons>
+                <Button x:Name="settingsButton" Grid.Row="2" Grid.Column="5" Click="OpenSettingsDialogAsync">
+                    Open settings
+                </Button>
             </Grid>
         </Expander>
 
@@ -92,7 +95,7 @@
         <TextBox x:Name="addressBar" Grid.Row="1" Grid.Column="3" IsReadOnly="True" />
 
         <controls:WebView2 x:Name="webView" Grid.Row="2" Grid.ColumnSpan="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-            Loaded="SetupWebViewHandlersAsync" Source="https://portal.olv.pretendo.cc" />
+                           Loaded="SetupWebViewHandlersAsync" Source="https://portal.olv.pretendo.cc" />
 
         <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="5" Orientation="Horizontal">
             <Button x:Name="uploadImageButton" Click="UploadImage">

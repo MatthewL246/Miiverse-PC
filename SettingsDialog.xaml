@@ -1,0 +1,26 @@
+﻿<ContentDialog x:Class="Miiverse_PC.SettingsDialog" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+               xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+               CloseButtonText="Cancel" PrimaryButtonText="Save"
+               SecondaryButtonText="Reset">
+
+    <ContentDialog.TitleTemplate>
+        <DataTemplate>
+            <StackPanel Orientation="Horizontal">
+                <SymbolIcon Margin="8" Symbol="Setting" />
+                <TextBlock Text="Settings" />
+            </StackPanel>
+        </DataTemplate>
+    </ContentDialog.TitleTemplate>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <TextBox x:Name="testSetting1" Grid.Row="0" Grid.Column="0" Header="Test setting 1" PlaceholderText="Test setting 1" />
+        <TextBox x:Name="testSetting2" Grid.Row="1" Grid.Column="0" Header="Test setting 2" PlaceholderText="Text setting 2" />
+    </Grid>
+</ContentDialog>

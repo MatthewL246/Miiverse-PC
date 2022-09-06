@@ -486,6 +486,13 @@ namespace Miiverse_PC
             }
         }
 
+        /// <summary>Opens the settings dialog.</summary>
+        private async void OpenSettingsDialogAsync(object sender, RoutedEventArgs e)
+        {
+            SettingsDialog settingsDialog = new();
+            _ = await settingsDialog.ShowAsync();
+        }
+
         /// <summary>Reload or stops loading the WebView.</summary>
         private void ReloadOrStop(object sender, RoutedEventArgs e)
         {
