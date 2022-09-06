@@ -19,9 +19,9 @@
 
         /// <summary>
         ///   The Miiverse portal host, which may override the one sent by the
-        ///   discovery server. Default: null (use the discovery server).
+        ///   discovery server. Default: empty (use the discovery server).
         /// </summary>
-        public string? PortalServer { get; set; }
+        public string PortalServer { get; init; } = "";
 
         /// <summary>
         ///   The language ID sent in the header when loading the Miiverse

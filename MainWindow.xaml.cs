@@ -323,16 +323,12 @@ namespace Miiverse_PC
                     return;
                 }
 
-                // If the Miiverse portal server has been set by the UI, use it.
-                // Otherwise, login with the Miiverse token and receive portal server
-                if (string.IsNullOrWhiteSpace(currentSettings.PortalServer))
+                // Login with the Miiverse token and receive portal server
+                currentStatus = await currentAccount.GetMiiversePortalServerAsync();
+                if (currentAccount.MiiversePortalServer == "https://")
                 {
-                    currentStatus = await currentAccount.GetMiiversePortalServerAsync();
-                    if (string.IsNullOrWhiteSpace(currentSettings.PortalServer))
-                    {
-                        currentError = "Login failed (Miiverse portal server)";
-                        return;
-                    }
+                    currentError = "Login failed (Miiverse portal server)";
+                    return;
                 }
 
                 // Create the ParamPack data using the selected language and country
@@ -387,19 +383,17 @@ namespace Miiverse_PC
             // no exceptions were thrown
             if (currentAccount.IsSignedIn)
             {
-                webView.CoreWebView2.AddWebResourceRequestedFilter($"{currentSettings.PortalServer}/*", CoreWebView2WebResourceContext.All);
+                webView.CoreWebView2.AddWebResourceRequestedFilter($"{currentAccount.MiiversePortalServer}/*", CoreWebView2WebResourceContext.All);
                 try
                 {
-                    // The Miiverse portal server cannot be null due to
-                    // Account.IsSignedIn being true
-                    webView.Source = new(currentSettings.PortalServer!);
+                    webView.Source = new(currentAccount.MiiversePortalServer);
                 }
                 catch (UriFormatException ex)
                 {
                     await ShowErrorDialogAsync
                     (
                         "Invalid Miiverse portal server",
-                        $"The Miiverse portal server ({currentSettings.PortalServer}) is not a valid URL.\n{ex}"
+                        $"The Miiverse portal server ({currentAccount.MiiversePortalServer}) is not a valid URL.\n{ex}"
                     ).ConfigureAwait(false);
                 }
             }
@@ -455,7 +449,7 @@ namespace Miiverse_PC
                     "notificationsPage" => "/news",
                     _ => "",
                 };
-                page = currentSettings.PortalServer + page;
+                page = currentAccount.MiiversePortalServer + page;
 
                 try
                 {

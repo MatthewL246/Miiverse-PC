@@ -31,6 +31,7 @@ namespace Miiverse_PC
             PnidUsername = username;
             pnidPassword = password;
             settings = accountSettings;
+            MiiversePortalServer = settings.PortalServer;
 
             HttpClientHandler handler = new()
             {
@@ -49,7 +50,13 @@ namespace Miiverse_PC
         ///   Is true if account access token, Miiverse service token, Miiverse
         ///   portal host, and ParamPack data all exist. Is false otherwise.
         /// </summary>
-        public bool IsSignedIn => !(oauthToken is null || MiiverseToken is null || settings.PortalServer is null || ParamPackData is null);
+        public bool IsSignedIn => !(oauthToken is null || MiiverseToken is null || MiiversePortalServer is null || ParamPackData is null);
+
+        /// <summary>
+        ///   The Miiverse portal server retrieved from the discovery server,
+        ///   may be overridden by settings.
+        /// </summary>
+        public string MiiversePortalServer { get; private set; }
 
         /// <summary>
         ///   The Miiverse service token returned by the account server.
@@ -219,6 +226,11 @@ namespace Miiverse_PC
             {
                 throw new InvalidOperationException("The Miiverse service token does not exist.");
             }
+            if (!string.IsNullOrEmpty(MiiversePortalServer))
+            {
+                // The portal server was already set by the settings
+                return $"Portal server already set to {MiiversePortalServer}";
+            }
 
             var request = new HttpRequestMessage(HttpMethod.Get, settings.DiscoveryServer + "/v1/endpoint")
             {
@@ -235,7 +247,7 @@ namespace Miiverse_PC
             xmlDocument.LoadXml(xmlResponse);
 
             string portalHostTag = settings.Platform == PlatformId.ThreeDS ? "n3ds_host" : "portal_host";
-            settings.PortalServer = "https://" + xmlDocument.GetElementsByTagName(portalHostTag)[0]?.InnerText;
+            MiiversePortalServer = "https://" + xmlDocument.GetElementsByTagName(portalHostTag)[0]?.InnerText;
 
             return GenerateErrorMessage("Miiverse portal discovery", response.StatusCode, xmlDocument);
         }
