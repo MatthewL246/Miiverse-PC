@@ -237,7 +237,10 @@ namespace Miiverse_PC
             {
                 // Need to wait until the main window is loaded before showing
                 // the error due to Content.XamlRoot being null
-                await Task.Delay(500);
+                while (Content.XamlRoot is null)
+                {
+                    await Task.Delay(100);
+                }
                 await ShowErrorDialogAsync
                 (
                     "Failed to load the saved account data",
