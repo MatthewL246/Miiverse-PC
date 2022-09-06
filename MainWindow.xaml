@@ -38,13 +38,13 @@
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" FontSize="16" FontWeight="Bold"
-                    ToolTipService.ToolTip="These options are simply the login credentials used to log into an account. Please read the README.md file on GitHub for more information about the password hash.">
+                    ToolTipService.ToolTip="These options are simply the credentials used to log into your Pretendo account.">
                     Login information:
                 </TextBlock>
                 <TextBox x:Name="username" Grid.Row="0" Grid.Column="1" MaxWidth="200" Margin="8" KeyDown="MoveToPasswordOnEnter"
                     PlaceholderText="Enter PNID username here" />
                 <PasswordBox x:Name="password" Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" MaxWidth="400" Margin="8" KeyDown="LoginOnEnter"
-                    PlaceholderText="Paste PNID password hash here" />
+                    PlaceholderText="Enter PNID password here" />
                 <Button x:Name="loginButton" Grid.Row="0" Grid.Column="4" Margin="8" Click="LoginAsync">
                     Login
                 </Button>
