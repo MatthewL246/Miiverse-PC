@@ -19,7 +19,7 @@ namespace Miiverse_PC
         }
 
         /// <summary>A reference to the current main window.</summary>
-        public static MainWindow? MainWindow { get; private set; }
+        internal static MainWindow? MainWindow { get; private set; }
 
         /// <summary>
         ///   Invoked when the application is launched normally by the end user.
