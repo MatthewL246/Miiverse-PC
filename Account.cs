@@ -32,6 +32,11 @@ namespace Miiverse_PC
         });
 
         /// <summary>
+        ///   The OAuth 2.0 access token returned by the account server.
+        /// </summary>
+        private string? oauthToken;
+
+        /// <summary>
         ///   Initializes a new instance of the <see cref="Account" /> class.
         /// </summary>
         /// <param name="username">The PNID's username: <see cref="PnidUsername" /></param>
@@ -60,7 +65,7 @@ namespace Miiverse_PC
         ///   Is true if account access token, Miiverse service token, Miiverse
         ///   portal host, and ParamPack data all exist. Is false otherwise.
         /// </summary>
-        public bool IsSignedIn => !(OauthToken is null || MiiverseToken is null || MiiversePortalServer is null || ParamPackData is null);
+        public bool IsSignedIn => !(oauthToken is null || MiiverseToken is null || MiiversePortalServer is null || ParamPackData is null);
 
         /// <summary>
         ///   The protocol and domain or IP address of the Miiverse discovery
@@ -78,10 +83,8 @@ namespace Miiverse_PC
         /// </summary>
         public string? MiiverseToken { get; private set; }
 
-        /// <summary>
-        ///   The OAuth 2.0 access token returned by the account server.
-        /// </summary>
-        public string? OauthToken { get; private set; }
+        /// <summary>Is true if the OAuth access token is null.</summary>
+        public bool OauthTokenIsNull => oauthToken is null;
 
         /// <summary>The data used in the X-Nintendo-ParamPack header (base64-encoded).</summary>
         public string? ParamPackData { get; private set; }
@@ -111,7 +114,7 @@ namespace Miiverse_PC
         /// <exception cref="XmlException" />
         public async Task<string> CreateMiiverseTokenAsync()
         {
-            if (OauthToken is null)
+            if (oauthToken is null)
             {
                 throw new InvalidOperationException("The account OAuth 2.0 access token does not exist.");
             }
@@ -121,7 +124,7 @@ namespace Miiverse_PC
                 Headers =
                 {
                     { "Host", "account.pretendo.cc" },
-                    { "Authorization", "Bearer " + OauthToken },
+                    { "Authorization", "Bearer " + oauthToken },
                     { "X-Nintendo-Client-ID", clientId },
                     { "X-Nintendo-Client-Secret", clientSecret },
                     { "X-Nintendo-Title-ID", miiverseTitleId }
@@ -177,7 +180,7 @@ namespace Miiverse_PC
             string xmlResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             var xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(xmlResponse);
-            OauthToken = xmlDocument.GetElementsByTagName("token")[0]?.InnerText;
+            oauthToken = xmlDocument.GetElementsByTagName("token")[0]?.InnerText;
 
             return GenerateErrorMessage("account access token creation", response.StatusCode, xmlDocument);
         }
@@ -283,7 +286,7 @@ namespace Miiverse_PC
         /// <exception cref="HttpRequestException" />
         public async Task<string> GetUserProfileXmlAsync()
         {
-            if (OauthToken is null)
+            if (oauthToken is null)
             {
                 throw new InvalidOperationException("The account OAuth 2.0 access token does not exist.");
             }
@@ -292,7 +295,7 @@ namespace Miiverse_PC
                 Headers =
                 {
                     { "Host", "account.pretendo.cc" },
-                    { "Authorization", "Bearer " + OauthToken },
+                    { "Authorization", "Bearer " + oauthToken },
                     { "X-Nintendo-Client-ID", clientId },
                     { "X-Nintendo-Client-Secret", clientSecret }
                 }

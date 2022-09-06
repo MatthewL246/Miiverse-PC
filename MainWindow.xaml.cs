@@ -305,7 +305,7 @@ namespace Miiverse_PC
 
                 // Login with password hash and receive OAuth2 token
                 currentStatus = await currentAccount.CreateOauth2TokenAsync();
-                if (currentAccount.OauthToken is null)
+                if (currentAccount.OauthTokenIsNull)
                 {
                     currentError = "Login failed (OAuth2 token)";
                     return;
