@@ -11,12 +11,6 @@ namespace Miiverse_PC
     /// <summary>The main window of the app.</summary>
     public sealed partial class MainWindow : Window
     {
-        /// <summary>The default Pretendo account server (official).</summary>
-        private const string defaultAccountServer = "https://account.pretendo.cc";
-
-        /// <summary>The default Pretendo Miiverse discovery server (official).</summary>
-        private const string defaultDiscoveryServer = "https://discovery.olv.pretendo.cc";
-
         /// <summary>The path where account data is stored as JSON.</summary>
         private readonly string accountDataJsonPath;
 
@@ -28,6 +22,9 @@ namespace Miiverse_PC
 
         /// <summary>The currently logged-in account.</summary>
         private Account? currentAccount;
+
+        /// <summary>The currently used account settings.</summary>
+        private Settings currentSettings = new();
 
         /// <summary>If the WebView is navigating to a page.</summary>
         private bool isWebViewNavigating = false;
@@ -267,13 +264,8 @@ namespace Miiverse_PC
             // Start login process
             UpdateLoginStatus(true);
 
-            // Process and normalize server names, setting defaults if empty
-            if (string.IsNullOrWhiteSpace(accountServer.Text))
-            {
-                accountServer.Text = defaultAccountServer;
-                discoveryServer.Text = defaultDiscoveryServer;
-            }
-            else
+            // Normalize all server names
+            if (!string.IsNullOrWhiteSpace(accountServer.Text))
             {
                 accountServer.Text = NormalizeServerName(accountServer.Text);
 
@@ -284,16 +276,28 @@ namespace Miiverse_PC
 
                 discoveryServer.Text = NormalizeServerName(discoveryServer.Text);
             }
+            if (!string.IsNullOrWhiteSpace(portalServer.Text))
+            {
+                portalServer.Text = NormalizeServerName(portalServer.Text);
+            }
 
             // Create the account and account status string
-            currentAccount = new(username.Text, password.Password, accountServer.Text, discoveryServer.Text);
+            // TODO: Settings should be created with the settingsDialog
+            currentSettings = new()
+            {
+                AccountServer = accountServer.Text,
+                DiscoveryServer = discoveryServer.Text,
+                PortalServer = portalServer.Text,
+                Country = (CountryId)countryBox.SelectedItem,
+                Language = (LanguageId)languageBox.SelectedItem,
+                Platform = (consoleSelect.SelectedItem as string) == "3DS" ? PlatformId.ThreeDS : PlatformId.WiiU,
+            };
+            currentAccount = new(username.Text, password.Password, currentSettings);
             string currentError = "(No error)";
             string currentStatus = "Starting login process";
 
             try
             {
-                var platform = (consoleSelect.SelectedItem as string) == "3DS" ? PlatformId.ThreeDS : PlatformId.WiiU;
-
                 // Hash the password if necessary
                 await currentAccount.HashPnidPasswordAsync();
                 if (currentAccount.PnidPasswordHash is null)
@@ -321,15 +325,10 @@ namespace Miiverse_PC
 
                 // If the Miiverse portal server has been set by the UI, use it.
                 // Otherwise, login with the Miiverse token and receive portal server
-                if (!string.IsNullOrWhiteSpace(portalServer.Text))
+                if (string.IsNullOrWhiteSpace(currentSettings.PortalServer))
                 {
-                    portalServer.Text = NormalizeServerName(portalServer.Text);
-                    currentAccount.MiiversePortalServer = portalServer.Text;
-                }
-                else
-                {
-                    currentStatus = await currentAccount.GetMiiversePortalServerAsync(platform);
-                    if (currentAccount.MiiversePortalServer is null)
+                    currentStatus = await currentAccount.GetMiiversePortalServerAsync();
+                    if (string.IsNullOrWhiteSpace(currentSettings.PortalServer))
                     {
                         currentError = "Login failed (Miiverse portal server)";
                         return;
@@ -337,7 +336,7 @@ namespace Miiverse_PC
                 }
 
                 // Create the ParamPack data using the selected language and country
-                currentAccount.CreateParamPack((LanguageId)languageBox.SelectedItem, (CountryId)countryBox.SelectedItem, platform);
+                currentAccount.CreateParamPack();
 
                 // At this point, account login has succeeded
                 currentStatus = "Successfully logged in.";
@@ -388,19 +387,19 @@ namespace Miiverse_PC
             // no exceptions were thrown
             if (currentAccount.IsSignedIn)
             {
-                webView.CoreWebView2.AddWebResourceRequestedFilter($"{currentAccount.MiiversePortalServer}/*", CoreWebView2WebResourceContext.All);
+                webView.CoreWebView2.AddWebResourceRequestedFilter($"{currentSettings.PortalServer}/*", CoreWebView2WebResourceContext.All);
                 try
                 {
                     // The Miiverse portal server cannot be null due to
                     // Account.IsSignedIn being true
-                    webView.Source = new(currentAccount.MiiversePortalServer!);
+                    webView.Source = new(currentSettings.PortalServer!);
                 }
                 catch (UriFormatException ex)
                 {
                     await ShowErrorDialogAsync
                     (
                         "Invalid Miiverse portal server",
-                        $"The Miiverse portal server (${currentAccount.MiiversePortalServer}) is not a valid URL.\n{ex}"
+                        $"The Miiverse portal server ({currentSettings.PortalServer}) is not a valid URL.\n{ex}"
                     ).ConfigureAwait(false);
                 }
             }
@@ -446,41 +445,28 @@ namespace Miiverse_PC
         {
             if (currentAccount is not null && currentAccount.IsSignedIn)
             {
+                string page = ((Button)sender).Name switch
+                {
+                    "userPage" => "/users/me",
+                    "userMenuPage" => "/users/menu",
+                    "activityFeedPage" => "/activity-feed",
+                    "communitiesPage" => "/communities",
+                    "messagesPage" => "/messages",
+                    "notificationsPage" => "/news",
+                    _ => "",
+                };
+                page = currentSettings.PortalServer + page;
+
                 try
                 {
-                    switch (((Button)sender).Name)
-                    {
-                        case "userPage":
-                            webView.Source = new(currentAccount.MiiversePortalServer + "/users/me");
-                            break;
-
-                        case "userMenuPage":
-                            webView.Source = new(currentAccount.MiiversePortalServer + "/users/menu");
-                            break;
-
-                        case "activityFeedPage":
-                            webView.Source = new(currentAccount.MiiversePortalServer + "/activity-feed");
-                            break;
-
-                        case "communitiesPage":
-                            webView.Source = new(currentAccount.MiiversePortalServer + "/communities");
-                            break;
-
-                        case "messagesPage":
-                            webView.Source = new(currentAccount.MiiversePortalServer + "/messages");
-                            break;
-
-                        case "notificationsPage":
-                            webView.Source = new(currentAccount.MiiversePortalServer + "/news");
-                            break;
-                    }
+                    webView.Source = new(page);
                 }
                 catch (UriFormatException ex)
                 {
                     _ = ShowErrorDialogAsync
                     (
                         "Invalid Miiverse portal server",
-                        $"The Miiverse portal server (${currentAccount.MiiversePortalServer}) is not a valid URL.\n{ex}"
+                        $"The Miiverse portal server (${page}) is not a valid URL.\n{ex}"
                     );
                 }
             }

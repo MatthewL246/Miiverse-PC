@@ -8,28 +8,13 @@ namespace Miiverse_PC
     /// <summary>Represents a Pretendo account or PNID.</summary>
     internal sealed class Account
     {
-        /// <summary>The hard-coded client ID used by the Wii U.</summary>
-        private const string clientId = "a2efa818a34fa16b8afbc8a74eba3eda";
+        private readonly HttpClient client;
 
-        /// <summary>The hard-coded client secret used by the Wii U.</summary>
-        private const string clientSecret = "c91cdb5658bd4954ade78533a339cf9a";
+        /// <summary>The plaintext password of the PNID.</summary>
+        private readonly string pnidPassword;
 
-        /// <summary>The title ID of the Wii U Miiverse applet in the US.</summary>
-        private const string miiverseTitleId = "000500301001610A";
-
-        /// <summary>The server's self-signed root certificate hash.</summary>
-        private const string serverRootCertificateHash = "209F918F628347868A559F52B68D007B6DD4554F";
-
-        private static readonly HttpClient client = new(new HttpClientHandler()
-        {
-            ServerCertificateCustomValidationCallback = (sender, certificate, chain, errors) =>
-            {
-                // Returns true if the certificate is valid or if it is invalid
-                // and its hash matches an expected hash
-                return errors == System.Net.Security.SslPolicyErrors.None
-                    || chain?.ChainElements.Last().Certificate.GetCertHashString() == serverRootCertificateHash;
-            }
-        });
+        /// <summary>The settings used by the account.</summary>
+        private readonly Settings settings;
 
         /// <summary>
         ///   The OAuth 2.0 access token returned by the account server.
@@ -41,42 +26,30 @@ namespace Miiverse_PC
         /// </summary>
         /// <param name="username">The PNID's username: <see cref="PnidUsername" /></param>
         /// <param name="password">The PNID's password: <see cref="PnidPasswordHash" /></param>
-        /// <param name="accountServer">
-        ///   The Pretendo account server to use: <see cref="AccountServer" />
-        /// </param>
-        /// <param name="miiverseDiscoveryServer">
-        ///   The Pretendo Miiverse discovery server to use: <see cref="MiiverseDiscoveryServer" />
-        /// </param>
-        public Account(string username, string password, string accountServer, string miiverseDiscoveryServer)
+        public Account(string username, string password, Settings accountSettings)
         {
             PnidUsername = username;
-            PnidPassword = password;
-            AccountServer = accountServer;
-            MiiverseDiscoveryServer = miiverseDiscoveryServer;
-        }
+            pnidPassword = password;
+            settings = accountSettings;
 
-        /// <summary>
-        ///   The protocol and domain or IP address of the account server that
-        ///   will be sent OAuth 2.0 login requests.
-        /// </summary>
-        public string AccountServer { get; }
+            HttpClientHandler handler = new()
+            {
+                ServerCertificateCustomValidationCallback = (sender, certificate, chain, errors) =>
+                {
+                    // Returns true if the certificate is valid or if it is
+                    // invalid and its hash matches an expected hash
+                    return errors == System.Net.Security.SslPolicyErrors.None
+                        || chain?.ChainElements.Last().Certificate.GetCertHashString() == settings.AllowedServerRootCertificateHash;
+                }
+            };
+            client = new(handler);
+        }
 
         /// <summary>
         ///   Is true if account access token, Miiverse service token, Miiverse
         ///   portal host, and ParamPack data all exist. Is false otherwise.
         /// </summary>
-        public bool IsSignedIn => !(oauthToken is null || MiiverseToken is null || MiiversePortalServer is null || ParamPackData is null);
-
-        /// <summary>
-        ///   The protocol and domain or IP address of the Miiverse discovery
-        ///   server, which responds with the Miiverse portal host.
-        /// </summary>
-        public string MiiverseDiscoveryServer { get; }
-
-        /// <summary>
-        ///   The Miiverse Wii U portal host sent by the discovery server.
-        /// </summary>
-        public string? MiiversePortalServer { get; set; }
+        public bool IsSignedIn => !(oauthToken is null || MiiverseToken is null || settings.PortalServer is null || ParamPackData is null);
 
         /// <summary>
         ///   The Miiverse service token returned by the account server.
@@ -88,9 +61,6 @@ namespace Miiverse_PC
 
         /// <summary>The data used in the X-Nintendo-ParamPack header (base64-encoded).</summary>
         public string? ParamPackData { get; private set; }
-
-        /// <summary>The plaintext password of the PNID.</summary>
-        public string PnidPassword { get; }
 
         /// <summary>
         ///   The password hash of the PNID (generated by the console using a
@@ -119,15 +89,15 @@ namespace Miiverse_PC
                 throw new InvalidOperationException("The account OAuth 2.0 access token does not exist.");
             }
 
-            var request = new HttpRequestMessage(HttpMethod.Get, AccountServer + "/v1/api/provider/service_token/@me")
+            var request = new HttpRequestMessage(HttpMethod.Get, settings.AccountServer + "/v1/api/provider/service_token/@me")
             {
                 Headers =
                 {
                     { "Host", "account.pretendo.cc" },
                     { "Authorization", "Bearer " + oauthToken },
-                    { "X-Nintendo-Client-ID", clientId },
-                    { "X-Nintendo-Client-Secret", clientSecret },
-                    { "X-Nintendo-Title-ID", miiverseTitleId }
+                    { "X-Nintendo-Client-ID", settings.ConsoleClientId },
+                    { "X-Nintendo-Client-Secret", settings.ConsoleClientSecret },
+                    { "X-Nintendo-Title-ID", settings.MiiverseTitleId }
                 }
             };
 
@@ -165,14 +135,14 @@ namespace Miiverse_PC
                 { "password_type", "hash" }
             };
 
-            var request = new HttpRequestMessage(HttpMethod.Post, AccountServer + "/v1/api/oauth20/access_token/generate")
+            var request = new HttpRequestMessage(HttpMethod.Post, settings.AccountServer + "/v1/api/oauth20/access_token/generate")
             {
                 Content = new FormUrlEncodedContent(requestValues),
                 Headers =
                 {
                     { "Host", "account.pretendo.cc" },
-                    { "X-Nintendo-Client-ID", clientId },
-                    { "X-Nintendo-Client-Secret", clientSecret }
+                    { "X-Nintendo-Client-ID", settings.ConsoleClientId },
+                    { "X-Nintendo-Client-Secret", settings.ConsoleClientSecret}
                 }
             };
 
@@ -186,22 +156,17 @@ namespace Miiverse_PC
         }
 
         /// <summary>Creates the data for the ParamPack header.</summary>
-        /// <param name="languageId">The language ID.</param>
-        /// <param name="countryId">The country ID.</param>
-        /// <param name="platformId">The platform ID (3DS or Wii U).</param>
-        /// <exception cref="InvalidOperationException" />
-        public void CreateParamPack(LanguageId languageId, CountryId countryId, PlatformId platformId)
+        public void CreateParamPack()
         {
-            var regionId = countryId switch
+            var regionId = settings.Country switch
             {
                 CountryId.Japan => RegionId.Japan, // Japan only
                 >= CountryId.Anguilla and <= CountryId.Venezuela => RegionId.America, // Countries that count as "America"
-                >= CountryId.Albania and <= CountryId.Jordan => RegionId.Europe, // All other countries that count as "Europe"
-                _ => throw new InvalidOperationException("Invalid country ID"),
+                _ => RegionId.Europe, // All other countries that count as "Europe"
             };
 
             TitleId titleId;
-            if (platformId == PlatformId.WiiU)
+            if (settings.Platform == PlatformId.WiiU)
             {
                 titleId = regionId switch
                 {
@@ -220,10 +185,10 @@ namespace Miiverse_PC
             var paramPackValues = new Dictionary<string, string>(5)
             {
                 { "title_id", ((ulong)titleId).ToString() },
-                { "platform_id", ((int)platformId).ToString() },
+                { "platform_id", ((int)settings.Platform).ToString() },
                 { "region_id", ((int)regionId).ToString() },
-                { "language_id", ((int)languageId).ToString() },
-                { "country_id", ((int)countryId).ToString() }
+                { "language_id", ((int)settings.Language).ToString() },
+                { "country_id", ((int)settings.Country).ToString() }
             };
 
             // The ParamPack data is formatted as "\name\value\" for each pair
@@ -241,9 +206,6 @@ namespace Miiverse_PC
         /// <summary>
         ///   Gets the Miiverse portal server from the discovery server asynchronously.
         /// </summary>
-        /// <param name="platform">
-        ///   The <see cref="PlatformId" /> of the target portal server.
-        /// </param>
         /// <returns>
         ///   A task object representing a string with a formatted error message
         ///   based on the server response.
@@ -251,14 +213,14 @@ namespace Miiverse_PC
         /// <exception cref="InvalidOperationException" />
         /// <exception cref="HttpRequestException" />
         /// <exception cref="XmlException" />
-        public async Task<string> GetMiiversePortalServerAsync(PlatformId platform)
+        public async Task<string> GetMiiversePortalServerAsync()
         {
             if (MiiverseToken is null)
             {
                 throw new InvalidOperationException("The Miiverse service token does not exist.");
             }
 
-            var request = new HttpRequestMessage(HttpMethod.Get, MiiverseDiscoveryServer + "/v1/endpoint")
+            var request = new HttpRequestMessage(HttpMethod.Get, settings.DiscoveryServer + "/v1/endpoint")
             {
                 Headers =
                 {
@@ -272,8 +234,8 @@ namespace Miiverse_PC
             var xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(xmlResponse);
 
-            string portalHostTag = platform == PlatformId.ThreeDS ? "n3ds_host" : "portal_host";
-            MiiversePortalServer = "https://" + xmlDocument.GetElementsByTagName(portalHostTag)[0]?.InnerText;
+            string portalHostTag = settings.Platform == PlatformId.ThreeDS ? "n3ds_host" : "portal_host";
+            settings.PortalServer = "https://" + xmlDocument.GetElementsByTagName(portalHostTag)[0]?.InnerText;
 
             return GenerateErrorMessage("Miiverse portal discovery", response.StatusCode, xmlDocument);
         }
@@ -290,14 +252,14 @@ namespace Miiverse_PC
             {
                 throw new InvalidOperationException("The account OAuth 2.0 access token does not exist.");
             }
-            var request = new HttpRequestMessage(HttpMethod.Get, AccountServer + "/v1/api/people/@me/profile")
+            var request = new HttpRequestMessage(HttpMethod.Get, settings.AccountServer + "/v1/api/people/@me/profile")
             {
                 Headers =
                 {
                     { "Host", "account.pretendo.cc" },
                     { "Authorization", "Bearer " + oauthToken },
-                    { "X-Nintendo-Client-ID", clientId },
-                    { "X-Nintendo-Client-Secret", clientSecret }
+                    { "X-Nintendo-Client-ID", settings.ConsoleClientId },
+                    { "X-Nintendo-Client-Secret", settings.ConsoleClientSecret }
                 }
             };
 
@@ -315,21 +277,21 @@ namespace Miiverse_PC
         /// <exception cref="XmlException" />
         public async Task HashPnidPasswordAsync()
         {
-            if (PnidPassword.Length == 64)
+            if (pnidPassword.Length == 64)
             {
                 // Assume the password is already a hash if it is 64 characters
-                PnidPasswordHash = PnidPassword;
+                PnidPasswordHash = pnidPassword;
                 return;
             }
 
             string urlQuery = $"?input={PnidUsername}&input_type=user_id&output_type=pid";
-            var request = new HttpRequestMessage(HttpMethod.Get, AccountServer + "/v1/api/admin/mapped_ids" + urlQuery)
+            var request = new HttpRequestMessage(HttpMethod.Get, settings.AccountServer + "/v1/api/admin/mapped_ids" + urlQuery)
             {
                 Headers =
                 {
                     { "Host", "account.pretendo.cc" },
-                    { "X-Nintendo-Client-ID", clientId },
-                    { "X-Nintendo-Client-Secret", clientSecret }
+                    { "X-Nintendo-Client-ID", settings.ConsoleClientId },
+                    { "X-Nintendo-Client-Secret", settings.ConsoleClientSecret }
                 }
             };
 
@@ -343,7 +305,7 @@ namespace Miiverse_PC
 
             if (parseSuccess)
             {
-                PnidPasswordHash = NintendoPasswordHash(pid, PnidPassword);
+                PnidPasswordHash = NintendoPasswordHash(pid, pnidPassword);
             }
         }
 
