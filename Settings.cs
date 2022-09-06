@@ -8,7 +8,6 @@
         ///   account server that will be sent OAuth 2.0 login requests and
         ///   Miiverse service token requests. Default: Pretendo official server.
         /// </summary>
-
         public string AccountServer { get; init; } = "https://account.pretendo.cc";
 
         /// <summary>
@@ -16,7 +15,6 @@
         ///   server, which responds with the Miiverse portal host. Default:
         ///   Pretendo official server.
         /// </summary>
-
         public string DiscoveryServer { get; init; } = "https://discovery.olv.pretendo.cc";
 
         /// <summary>
@@ -47,21 +45,18 @@
         ///   The client ID used by the console for account requests. Default:
         ///   the Wii U's client ID.
         /// </summary>
-
         public string ConsoleClientId { get; init; } = "a2efa818a34fa16b8afbc8a74eba3eda";
 
         /// <summary>
         ///   The client secret used by the console for account requests.
         ///   Default: the Wii U's client secret.
         /// </summary>
-
         public string ConsoleClientSecret { get; init; } = "c91cdb5658bd4954ade78533a339cf9a";
 
         /// <summary>
         ///   The title ID of the Miiverse applet. Default: the Wii U Miiverse
         ///   applet in the US.
         /// </summary>
-
         public string MiiverseTitleId { get; init; } = "000500301001610A";
 
         /// <summary>
