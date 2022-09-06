@@ -154,7 +154,7 @@ namespace Miiverse_PC
                 throw new InvalidOperationException("The PNID password hash does not exist.");
             }
 
-            var requestValues = new Dictionary<string, string>
+            var requestValues = new Dictionary<string, string>(4)
             {
                 { "grant_type", "password" },
                 { "user_id", PnidUsername },
@@ -214,13 +214,13 @@ namespace Miiverse_PC
                 titleId = TitleId.Unknown;
             }
 
-            var paramPackValues = new Dictionary<string, string>
+            var paramPackValues = new Dictionary<string, string>(5)
             {
-                { "title_id", titleId.ToString("d") },
-                { "platform_id", platformId.ToString("d") },
-                { "region_id", regionId.ToString("d") },
-                { "language_id", languageId.ToString("d") },
-                { "country_id", countryId.ToString("d") }
+                { "title_id", ((ulong)titleId).ToString() },
+                { "platform_id", ((int)platformId).ToString() },
+                { "region_id", ((int)regionId).ToString() },
+                { "language_id", ((int)languageId).ToString() },
+                { "country_id", ((int)countryId).ToString() }
             };
 
             // The ParamPack data is formatted as "\name\value\" for each pair
