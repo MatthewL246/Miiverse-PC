@@ -1,16 +1,15 @@
 ﻿<ContentDialog x:Class="Miiverse_PC.SettingsDialog" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                CloseButtonText="Cancel" PrimaryButtonText="Save"
-               SecondaryButtonText="Reset">
+               SecondaryButtonText="Reset"
+               Style="{StaticResource DefaultContentDialogStyle}">
 
-    <ContentDialog.TitleTemplate>
-        <DataTemplate>
-            <StackPanel Orientation="Horizontal">
-                <SymbolIcon Margin="8" Symbol="Setting" />
-                <TextBlock Text="Settings" />
-            </StackPanel>
-        </DataTemplate>
-    </ContentDialog.TitleTemplate>
+    <ContentDialog.Title>
+        <StackPanel Orientation="Horizontal">
+            <SymbolIcon Margin="4" Symbol="Setting" />
+            <TextBlock Margin="4" Text="Settings" />
+        </StackPanel>
+    </ContentDialog.Title>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
