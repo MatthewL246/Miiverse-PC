@@ -365,6 +365,12 @@ namespace Miiverse_PC
                 }
             }
 
+            if (!currentAccount.IsSignedIn)
+            {
+                // Also return if the login failed without an exception
+                return;
+            }
+
             // Save or clear the stored login info
             if (saveLoginInfo.IsChecked == true)
             {
