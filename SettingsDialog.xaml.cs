@@ -21,6 +21,7 @@ namespace Miiverse_PC
         /// <summary>The currently used account settings.</summary>
         public Settings CurrentSettings { get; set; } = new();
 
+        /// <summary>Loads the settings UI from the current settings.</summary>
         public void LoadSettings()
         {
             accountServer.Text = CurrentSettings.AccountServer;
@@ -37,12 +38,16 @@ namespace Miiverse_PC
             allowedServerCertificateHash.Text = CurrentSettings.AllowedServerRootCertificateHash;
         }
 
+        /// <summary>
+        ///   Resets the current settings and UI to the default values.
+        /// </summary>
         public void ResetSettings()
         {
             CurrentSettings = new();
             LoadSettings();
         }
 
+        /// <summary>Saves the current settings from the settings UI.</summary>
         public void SaveSettings()
         {
             CurrentSettings = new()
