@@ -9,7 +9,6 @@ namespace Miiverse_PC
         public SettingsDialog()
         {
             InitializeComponent();
-            XamlRoot = App.MainWindow!.Content.XamlRoot;
 
             // Set up combo box bindings
             language.ItemsSource = Enum.GetValues(typeof(LanguageId));
@@ -50,6 +49,10 @@ namespace Miiverse_PC
         /// <summary>Saves the current settings from the settings UI.</summary>
         public void SaveSettings()
         {
+            accountServer.Text = NormalizeServerName(accountServer.Text);
+            discoveryServer.Text = NormalizeServerName(discoveryServer.Text);
+            portalServer.Text = NormalizeServerName(portalServer.Text);
+
             CurrentSettings = new()
             {
                 AccountServer = accountServer.Text,
@@ -65,6 +68,22 @@ namespace Miiverse_PC
                 MiiverseTitleId = miiverseTitleId.Text,
                 AllowedServerRootCertificateHash = allowedServerCertificateHash.Text,
             };
+        }
+
+        /// <summary>
+        ///   Normalizes a server name by adding "https://" to the beginning if
+        ///   it is not already there.
+        /// </summary>
+        /// <param name="server">The non-normalized server name.</param>
+        /// <returns>The server name after normalization.</returns>
+        private static string NormalizeServerName(string server)
+        {
+            string normalizedServer = server;
+            if (!server.StartsWith("http"))
+            {
+                normalizedServer = "https://" + server;
+            }
+            return normalizedServer;
         }
     }
 }

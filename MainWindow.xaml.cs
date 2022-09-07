@@ -20,16 +20,16 @@ namespace Miiverse_PC
         /// <summary>The JavaScript code that is run on NavigationCompleted.</summary>
         private readonly string javascriptCode;
 
+        /// <summary>
+        ///   The settings dialog used to display and edit account settings.
+        /// </summary>
+        private readonly SettingsDialog settingsDialog = new();
+
         /// <summary>The currently logged-in account.</summary>
         private Account? currentAccount;
 
         /// <summary>If the WebView is navigating to a page.</summary>
         private bool isWebViewNavigating = false;
-
-        /// <summary>
-        ///   The settings dialog used to display and edit account settings.
-        /// </summary>
-        private SettingsDialog? settingsDialog;
 
         /// <summary>
         ///   Code that runs on initialization of the <see cref="MainWindow" /> class.
@@ -41,12 +41,7 @@ namespace Miiverse_PC
             Title = "Miiverse PC Client";
 
             javascriptCode = ReadJavascriptFile(@"js\portal.js");
-
-            // Set up combo box bindings
-            languageBox.ItemsSource = Enum.GetValues(typeof(LanguageId));
-            languageBox.SelectedItem = LanguageId.English;
-            countryBox.ItemsSource = Enum.GetValues(typeof(CountryId));
-            countryBox.SelectedItem = CountryId.UnitedStates;
+            settingsDialog.LoadSettings();
 
             // Set up and restore storage
             try
@@ -66,22 +61,6 @@ namespace Miiverse_PC
             }
 
             _ = LoadAccountDataAsync();
-        }
-
-        /// <summary>
-        ///   Normalizes a server name by adding "https://" to the beginning if
-        ///   it is not already there.
-        /// </summary>
-        /// <param name="server">The non-normalized server name.</param>
-        /// <returns>The server name after normalization.</returns>
-        private static string NormalizeServerName(string server)
-        {
-            string normalizedServer = server;
-            if (!server.StartsWith("http"))
-            {
-                normalizedServer = "https://" + server;
-            }
-            return normalizedServer;
         }
 
         /// <summary>
@@ -217,18 +196,8 @@ namespace Miiverse_PC
 
                 var accountNode = JsonNode.Parse(jsonData)!;
 
-                // Values can safely be null and get converted an empty string
                 username.Text = accountNode["username"]?.ToString();
                 password.Password = accountNode["passwordHash"]?.ToString();
-
-                accountServer.Text = accountNode["accountServer"]?.ToString();
-                discoveryServer.Text = accountNode["discoveryServer"]?.ToString();
-                portalServer.Text = accountNode["portalServer"]?.ToString();
-
-                // Values that need to have defaults if null
-                languageBox.SelectedItem = (LanguageId?)(int?)accountNode["languageId"] ?? LanguageId.English;
-                countryBox.SelectedItem = (CountryId?)(int?)accountNode["countryId"] ?? CountryId.UnitedStates;
-                consoleSelect.SelectedItem = (string?)accountNode["console"] ?? "Wii U";
 
                 saveLoginInfo.IsChecked = true;
             }
@@ -266,25 +235,7 @@ namespace Miiverse_PC
             // Start login process
             UpdateLoginStatus(true);
 
-            // Normalize all server names
-            if (!string.IsNullOrWhiteSpace(accountServer.Text))
-            {
-                accountServer.Text = NormalizeServerName(accountServer.Text);
-
-                if (string.IsNullOrWhiteSpace(discoveryServer.Text))
-                {
-                    discoveryServer.Text = accountServer.Text;
-                }
-
-                discoveryServer.Text = NormalizeServerName(discoveryServer.Text);
-            }
-            if (!string.IsNullOrWhiteSpace(portalServer.Text))
-            {
-                portalServer.Text = NormalizeServerName(portalServer.Text);
-            }
-
             // Create the account and account status string
-            settingsDialog ??= new();
             currentAccount = new(username.Text, password.Password, settingsDialog.CurrentSettings);
             string currentError = "(No error)";
             string currentStatus = "Starting login process";
@@ -462,7 +413,7 @@ namespace Miiverse_PC
         /// <summary>Opens the settings dialog.</summary>
         private async void OpenSettingsDialogAsync(object sender, RoutedEventArgs e)
         {
-            settingsDialog ??= new();
+            settingsDialog.XamlRoot ??= Content.XamlRoot;
             var result = await settingsDialog.ShowAsync();
 
             if (result == ContentDialogResult.Primary)
@@ -512,14 +463,6 @@ namespace Miiverse_PC
                 {
                     ["username"] = currentAccount?.PnidUsername,
                     ["passwordHash"] = currentAccount?.PnidPasswordHash,
-
-                    ["accountServer"] = accountServer.Text,
-                    ["discoveryServer"] = discoveryServer.Text,
-                    ["portalServer"] = portalServer.Text,
-
-                    ["languageId"] = (int)languageBox.SelectedItem,
-                    ["countryId"] = (int)countryBox.SelectedItem,
-                    ["console"] = (string)consoleSelect.SelectedItem,
                 };
 
                 JsonSerializerOptions options = new() { WriteIndented = true };
@@ -578,12 +521,12 @@ namespace Miiverse_PC
         {
             if (isLoggingIn)
             {
-                loginArea.Header = "Login status: Logging in...";
+                loginStatus.Text = "Login status: Logging in...";
                 loginButton.IsEnabled = false;
             }
             else
             {
-                loginArea.Header = currentAccount is null
+                loginStatus.Text = currentAccount is null
                     || !currentAccount.IsSignedIn
                     ? "Login status: Not logged in"
                     : $"Login status: Logged in as \"{currentAccount.PnidUsername}\"";
