@@ -463,7 +463,23 @@ namespace Miiverse_PC
         private async void OpenSettingsDialogAsync(object sender, RoutedEventArgs e)
         {
             settingsDialog ??= new();
-            _ = await settingsDialog.ShowAsync();
+            var result = await settingsDialog.ShowAsync();
+
+            if (result == ContentDialogResult.Primary)
+            {
+                // Save button clicked
+                settingsDialog.SaveSettings();
+            }
+            else if (result == ContentDialogResult.Secondary)
+            {
+                // Reset button clicked
+                settingsDialog.ResetSettings();
+            }
+            else
+            {
+                // Dialog was closed, do not change settings
+                settingsDialog.LoadSettings();
+            }
         }
 
         /// <summary>Reload or stops loading the WebView.</summary>
