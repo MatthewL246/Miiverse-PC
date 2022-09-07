@@ -15,7 +15,7 @@ Choose whether you want to use the MSIX installer or the portable zip file. The 
 First, you need to install and trust my MSIX signing certificate. You only need to do this once **when installing for the first time**, not when updating.
 
 1. Download the release file named `Miiverse-PC_MSIX_Certificate.cer`.
-2. Double-click the certificate file, click the details tab, and scroll down to and click "Thumbprint." It should be `428f9c7f9ac01e6ad06d38183c3d31065803d977`. **If it is not, DO NOT TRUST THE CERTIFICATE and create an issue in this repo.**
+2. Double-click the certificate file, click the details tab, and scroll down to and select "Thumbprint." On the bottom of the dialog, it should display `428f9c7f9ac01e6ad06d38183c3d31065803d977`. **If it does not, DO NOT TRUST THE CERTIFICATE and create an issue in this repo.**
 3. If the thumbprint matches, go back to the general tab and click "Install Certificate..."
     1. Select "Local Machine" and then Next. Click Yes on the User Account Control dialog.
     2. Select "Place all certificates in the following store," click Browse, and select the **"Trusted People"** certificate store. Then click OK and Next.
@@ -51,6 +51,6 @@ Note that the CI build MSIX installer uses a different signing certificate than 
 
 ## Getting the password hash
 
-1. Log in to your Pretendo account at [pretendo.network](https://pretendo.network/account) (or an different Pretendo server that is hosting the website).
+1. Log in to your Pretendo account at [pretendo.network](https://pretendo.network/account) (or a different Pretendo server that is hosting the website).
 2. Click the "Download account files" button and save the zip.
 3. Extract the zip and open the `account.dat` file in any text editor. The password hash is the 64-character hash after `AccountPasswordCache=`.
