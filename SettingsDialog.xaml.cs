@@ -49,9 +49,14 @@ namespace Miiverse_PC
         /// <summary>Saves the current settings from the settings UI.</summary>
         public void SaveSettings()
         {
-            accountServer.Text = NormalizeServerName(accountServer.Text);
-            discoveryServer.Text = NormalizeServerName(discoveryServer.Text);
-            portalServer.Text = NormalizeServerName(portalServer.Text);
+            TextBox[] serverTextBoxes = new[] { accountServer, discoveryServer, portalServer };
+            foreach (var textBox in serverTextBoxes)
+            {
+                if (!string.IsNullOrWhiteSpace(textBox.Text))
+                {
+                    textBox.Text = NormalizeServerName(textBox.Text);
+                }
+            }
 
             CurrentSettings = new()
             {

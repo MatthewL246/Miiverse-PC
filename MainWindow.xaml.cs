@@ -20,6 +20,9 @@ namespace Miiverse_PC
         /// <summary>The JavaScript code that is run on NavigationCompleted.</summary>
         private readonly string javascriptCode;
 
+        /// <summary>The path where settings data is stored as JSON.</summary>
+        private readonly string settingsDataJsonPath;
+
         /// <summary>
         ///   The settings dialog used to display and edit account settings.
         /// </summary>
@@ -59,8 +62,11 @@ namespace Miiverse_PC
                     ? Path.Combine(currentDirectory, "accountData.json")
                     : Path.Combine(Environment.CurrentDirectory, "accountData.json");
             }
+            settingsDataJsonPath = Path.Combine(Path.GetDirectoryName(accountDataJsonPath)!, "settings.json");
 
+            // Load account and settings data
             _ = LoadAccountDataAsync();
+            _ = LoadSettingsDataAsync();
         }
 
         /// <summary>
@@ -96,7 +102,7 @@ namespace Miiverse_PC
             }
         }
 
-        /// <summary>Clears the stored account data asynchronously.</summary>
+        /// <summary>Clears the stored account data.</summary>
         private async Task ClearAccountDataAsync()
         {
             try
@@ -106,6 +112,20 @@ namespace Miiverse_PC
             catch (Exception ex)
             {
                 await ShowErrorDialogAsync("Failed to delete account data", ex.ToString());
+            }
+        }
+
+        /// <summary>Clears the stored settings data.</summary>
+        private async Task ClearSettingsDataAsync()
+        {
+            settingsDialog.ResetSettings();
+            try
+            {
+                File.Delete(settingsDataJsonPath);
+            }
+            catch (Exception ex)
+            {
+                await ShowErrorDialogAsync("Failed to delete settings data", ex.ToString());
             }
         }
 
@@ -175,7 +195,7 @@ namespace Miiverse_PC
             addressBar.Text = sender.Source;
         }
 
-        /// <summary>Loads the stored account data and settings asynchronously.</summary>
+        /// <summary>Loads the stored account data asynchronously.</summary>
         private async Task LoadAccountDataAsync()
         {
             try
@@ -215,6 +235,48 @@ namespace Miiverse_PC
                     "The saved data will be automatically deleted.\n\n" + ex.ToString()
                 ).ConfigureAwait(false);
                 await ClearAccountDataAsync().ConfigureAwait(false);
+            }
+        }
+
+        /// <summary>Loads the stored settings data asynchronously.</summary>
+        private async Task LoadSettingsDataAsync()
+        {
+            try
+            {
+                if (!File.Exists(settingsDataJsonPath))
+                {
+                    // If the file does not exist, there is nothing to load
+                    return;
+                }
+
+                string jsonData = await File.ReadAllTextAsync(settingsDataJsonPath);
+
+                if (string.IsNullOrWhiteSpace(jsonData))
+                {
+                    // Or if the file is empty
+                    return;
+                }
+
+                Settings? storedSettings = JsonSerializer.Deserialize<Settings>(jsonData);
+
+                // Use default settings if deserialization returns null
+                storedSettings ??= new();
+                settingsDialog.CurrentSettings = storedSettings;
+            }
+            catch (Exception ex)
+            {
+                // Need to wait until the main window is loaded before showing
+                // the error due to Content.XamlRoot being null
+                while (Content.XamlRoot is null)
+                {
+                    await Task.Delay(100);
+                }
+                await ShowErrorDialogAsync
+                (
+                    "Failed to load the saved settings",
+                    "The settings will be automatically reset.\n\n" + ex.ToString()
+                ).ConfigureAwait(false);
+                await ClearSettingsDataAsync().ConfigureAwait(false);
             }
         }
 
@@ -420,15 +482,18 @@ namespace Miiverse_PC
             {
                 // Save button clicked
                 settingsDialog.SaveSettings();
+
+                // Save the settings data as JSON
+                await SaveSettingsDataAsync();
             }
             else if (result == ContentDialogResult.Secondary)
             {
                 // Reset button clicked
-                settingsDialog.ResetSettings();
+                await ClearSettingsDataAsync();
             }
             else
             {
-                // Dialog was closed, do not change settings
+                // Dialog was closed, do not save settings
                 settingsDialog.LoadSettings();
             }
         }
@@ -454,7 +519,7 @@ namespace Miiverse_PC
             }
         }
 
-        /// <summary>Saves the current account's login info and settings.</summary>
+        /// <summary>Saves the current account's login info as JSON.</summary>
         private async Task SaveAccountDataAsync()
         {
             try
@@ -465,13 +530,25 @@ namespace Miiverse_PC
                     ["passwordHash"] = currentAccount?.PnidPasswordHash,
                 };
 
-                JsonSerializerOptions options = new() { WriteIndented = true };
-
-                await File.WriteAllTextAsync(accountDataJsonPath, accountDataObject.ToJsonString(options));
+                await File.WriteAllTextAsync(accountDataJsonPath, accountDataObject.ToJsonString());
             }
             catch (Exception ex)
             {
                 await ShowErrorDialogAsync("Failed to save account data", ex.ToString());
+            }
+        }
+
+        /// <summary>Saves the current settings as JSON.</summary>
+        private async Task SaveSettingsDataAsync()
+        {
+            try
+            {
+                string settingsData = JsonSerializer.Serialize(settingsDialog.CurrentSettings);
+                await File.WriteAllTextAsync(settingsDataJsonPath, settingsData);
+            }
+            catch (Exception ex)
+            {
+                await ShowErrorDialogAsync("Failed to save new settings", ex.ToString());
             }
         }
 
