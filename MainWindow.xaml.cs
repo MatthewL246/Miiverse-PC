@@ -118,7 +118,7 @@ namespace Miiverse_PC
         }
 
         /// <summary>Clears the stored account data.</summary>
-        private async Task ClearAccountDataAsync()
+        private async Task DeleteAccountDataAsync()
         {
             try
             {
@@ -131,7 +131,7 @@ namespace Miiverse_PC
         }
 
         /// <summary>Clears the stored settings data.</summary>
-        private async Task ClearSettingsDataAsync()
+        private async Task DeleteSettingsDataAsync()
         {
             settingsDialog.ResetSettings();
             try
@@ -249,7 +249,7 @@ namespace Miiverse_PC
                     "Failed to load the saved account data",
                     "The saved data will be automatically deleted.\n\n" + ex.ToString()
                 ).ConfigureAwait(false);
-                await ClearAccountDataAsync().ConfigureAwait(false);
+                await DeleteAccountDataAsync().ConfigureAwait(false);
             }
         }
 
@@ -291,7 +291,7 @@ namespace Miiverse_PC
                     "Failed to load the saved settings",
                     "The settings will be automatically reset.\n\n" + ex.ToString()
                 ).ConfigureAwait(false);
-                await ClearSettingsDataAsync().ConfigureAwait(false);
+                await DeleteSettingsDataAsync().ConfigureAwait(false);
             }
         }
 
@@ -397,7 +397,7 @@ namespace Miiverse_PC
             }
             else
             {
-                await ClearAccountDataAsync();
+                await DeleteAccountDataAsync();
             }
 
             // Set up the WebView and save login info if the login succeeded and
@@ -504,7 +504,10 @@ namespace Miiverse_PC
             else if (result == ContentDialogResult.Secondary)
             {
                 // Reset button clicked
-                await ClearSettingsDataAsync();
+                settingsDialog.ResetSettings();
+
+                // Delete the stored settings data
+                await DeleteSettingsDataAsync();
             }
             else
             {
