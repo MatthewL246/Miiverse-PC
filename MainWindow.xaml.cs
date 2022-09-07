@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Web.WebView2.Core;
@@ -11,6 +12,20 @@ namespace Miiverse_PC
     /// <summary>The main window of the app.</summary>
     public sealed partial class MainWindow : Window
     {
+        /// <summary>The default options for JSON serialization.</summary>
+        private static readonly JsonSerializerOptions defaultSerializerOptions = new()
+        {
+            WriteIndented = true,
+            PropertyNameCaseInsensitive = true,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            Converters = {
+                new JsonStringEnumConverter()
+            },
+            ReadCommentHandling = JsonCommentHandling.Skip,
+            AllowTrailingCommas = true,
+            NumberHandling = JsonNumberHandling.AllowReadingFromString,
+        };
+
         /// <summary>The path where account data is stored as JSON.</summary>
         private readonly string accountDataJsonPath;
 
@@ -257,7 +272,7 @@ namespace Miiverse_PC
                     return;
                 }
 
-                Settings? storedSettings = JsonSerializer.Deserialize<Settings>(jsonData);
+                Settings? storedSettings = JsonSerializer.Deserialize<Settings>(jsonData, defaultSerializerOptions);
 
                 // Use default settings if deserialization returns null
                 storedSettings ??= new();
@@ -530,7 +545,8 @@ namespace Miiverse_PC
                     ["passwordHash"] = currentAccount?.PnidPasswordHash,
                 };
 
-                await File.WriteAllTextAsync(accountDataJsonPath, accountDataObject.ToJsonString());
+                string jsonData = accountDataObject.ToJsonString(defaultSerializerOptions);
+                await File.WriteAllTextAsync(accountDataJsonPath, jsonData);
             }
             catch (Exception ex)
             {
@@ -543,7 +559,7 @@ namespace Miiverse_PC
         {
             try
             {
-                string settingsData = JsonSerializer.Serialize(settingsDialog.CurrentSettings);
+                string settingsData = JsonSerializer.Serialize(settingsDialog.CurrentSettings, defaultSerializerOptions);
                 await File.WriteAllTextAsync(settingsDataJsonPath, settingsData);
             }
             catch (Exception ex)
