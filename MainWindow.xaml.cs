@@ -504,10 +504,23 @@ namespace Miiverse_PC
             else if (result == ContentDialogResult.Secondary)
             {
                 // Reset button clicked
-                settingsDialog.ResetSettings();
+                ContentDialog confirmationDialog = new()
+                {
+                    Title = "Reset confirmation",
+                    Content = "Are you sure that you want to reset the settings?",
+                    PrimaryButtonText = "Reset",
+                    CloseButtonText = "Cancel",
+                    XamlRoot = Content.XamlRoot,
+                };
+                var confirmation = await confirmationDialog.ShowAsync();
 
-                // Delete the stored settings data
-                await DeleteSettingsDataAsync();
+                if (confirmation == ContentDialogResult.Primary)
+                {
+                    settingsDialog.ResetSettings();
+
+                    // Delete the stored settings data
+                    await DeleteSettingsDataAsync();
+                }
             }
             else
             {
