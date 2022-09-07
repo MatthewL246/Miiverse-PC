@@ -10,16 +10,39 @@
             <TextBlock Margin="4" Text="Settings" />
         </StackPanel>
     </ContentDialog.Title>
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
+    <ScrollViewer>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
 
-        <TextBox x:Name="testSetting1" Grid.Row="0" Grid.Column="0" Header="Test setting 1" PlaceholderText="Test setting 1" />
-        <TextBox x:Name="testSetting2" Grid.Row="1" Grid.Column="0" Header="Test setting 2" PlaceholderText="Text setting 2" />
-    </Grid>
+            <TextBox x:Name="accountServer" Grid.Row="0" Header="Account server:" />
+            <TextBox x:Name="discoveryServer" Grid.Row="1" Header="Discovery server:" />
+            <TextBox x:Name="portalServer" Grid.Row="2" Header="Miiverse portal server:" />
+            <ComboBox x:Name="language" Grid.Row="3" Header="Miiverse language" Text="Select language" />
+            <ComboBox x:Name="country" Grid.Row="4" Header="Console country" Text="Select country" />
+            <RadioButtons x:Name="console" Grid.Row="5" Header="Select console (Wii U recommended, 3DS is unstable)" SelectedIndex="0">
+                <x:String>Wii U</x:String>
+                <x:String>3DS</x:String>
+            </RadioButtons>
+            <TextBlock Grid.Row="6" Text="Advanced settings:" />
+            <TextBox x:Name="clientId" Grid.Row="7" Header="Console client ID:" />
+            <TextBox x:Name="clientSecret" Grid.Row="8" Header="Console client secret:" />
+            <TextBox x:Name="miiverseTitleId" Grid.Row="9" Header="Miiverse title ID:" />
+            <TextBox x:Name="allowedServerCertificateHash" Grid.Row="10" Header="Allowed server certificate thumbprint:" />
+        </Grid>
+    </ScrollViewer>
 </ContentDialog>

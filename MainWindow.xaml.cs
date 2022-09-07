@@ -23,11 +23,13 @@ namespace Miiverse_PC
         /// <summary>The currently logged-in account.</summary>
         private Account? currentAccount;
 
-        /// <summary>The currently used account settings.</summary>
-        private Settings currentSettings = new();
-
         /// <summary>If the WebView is navigating to a page.</summary>
         private bool isWebViewNavigating = false;
+
+        /// <summary>
+        ///   The settings dialog used to display and edit account settings.
+        /// </summary>
+        private SettingsDialog? settingsDialog;
 
         /// <summary>
         ///   Code that runs on initialization of the <see cref="MainWindow" /> class.
@@ -282,17 +284,8 @@ namespace Miiverse_PC
             }
 
             // Create the account and account status string
-            // TODO: Settings should be created with the settingsDialog
-            currentSettings = new()
-            {
-                AccountServer = accountServer.Text,
-                DiscoveryServer = discoveryServer.Text,
-                PortalServer = portalServer.Text,
-                Country = (CountryId)countryBox.SelectedItem,
-                Language = (LanguageId)languageBox.SelectedItem,
-                Platform = (consoleSelect.SelectedItem as string) == "3DS" ? PlatformId.ThreeDS : PlatformId.WiiU,
-            };
-            currentAccount = new(username.Text, password.Password, currentSettings);
+            settingsDialog ??= new();
+            currentAccount = new(username.Text, password.Password, settingsDialog.CurrentSettings);
             string currentError = "(No error)";
             string currentStatus = "Starting login process";
 
@@ -469,7 +462,7 @@ namespace Miiverse_PC
         /// <summary>Opens the settings dialog.</summary>
         private async void OpenSettingsDialogAsync(object sender, RoutedEventArgs e)
         {
-            SettingsDialog settingsDialog = new();
+            settingsDialog ??= new();
             _ = await settingsDialog.ShowAsync();
         }
 
