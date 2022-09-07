@@ -40,12 +40,12 @@
         Panama = 40,
         Paraguay = 41,
         Peru = 42,
-        StKittsandNevis = 43,
+        StKittsAndNevis = 43,
         StLucia = 44,
-        StVincentandtheGrenadines = 45,
+        StVincentAndTheGrenadines = 45,
         Suriname = 46,
-        TrinidadandTobago = 47,
-        TurksandCaicosIslands = 48,
+        TrinidadAndTobago = 47,
+        TurksAndCaicosIslands = 48,
         UnitedStates = 49,
         Uruguay = 50,
         USVirginIslands = 51,
@@ -54,7 +54,7 @@
         Australia = 65,
         Austria = 66,
         Belgium = 67,
-        BosniaandHerzegovina = 68,
+        BosniaAndHerzegovina = 68,
         Botswana = 69,
         Bulgaria = 70,
         Croatia = 71,
@@ -100,13 +100,13 @@
         Zambia = 111,
         Zimbabwe = 112,
         Azerbaijan = 113,
-        IslamicRepublicofMauritania = 114,
-        RepublicofMali = 115,
-        RepublicofNiger = 116,
-        RepublicofChad = 117,
-        RepublicoftheSudan = 118,
-        StateofEritrea = 119,
-        RepublicofDjibouti = 120,
+        IslamicRepublicOfMauritania = 114,
+        RepublicOfMali = 115,
+        RepublicOfNiger = 116,
+        RepublicOfChad = 117,
+        RepublicOftheSudan = 118,
+        StateOfEritrea = 119,
+        RepublicOfDjibouti = 120,
         SomaliRepublic = 121,
         Taiwan = 128,
         SouthKorea = 136,
@@ -118,7 +118,7 @@
         Philippines = 155,
         Malaysia = 156,
         China = 160,
-        UAE = 168,
+        UnitedArabEmirates = 168,
         India = 169,
         Egypt = 170,
         Oman = 171,
@@ -131,8 +131,7 @@
     }
 
     /// <summary>The language IDs used by Miiverse.</summary>
-    // See
-    // https://github.com/PretendoNetwork/juxt-web/blob/main/src/util.js#L254
+    // See https://github.com/PretendoNetwork/juxt-web/blob/main/src/util.js#L254
     internal enum LanguageId
     {
         Japanese,
