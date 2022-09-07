@@ -116,14 +116,14 @@ jobs:
         run: msbuild /t:Restore /p:Configuration=${{ matrix.configuration }} /p:Platform=${{ matrix.platform }}
 
       - name: Build the app and generate a MSIX package
-        if: ${{ env.THUMBPRINT != "" }}
+        if: ${{ env.THUMBPRINT }} != ""
         run:
           msbuild /p:Configuration=${{ matrix.configuration }} /p:Platform=${{ matrix.platform }}
           /p:PackageCertificateThumbprint=${{ env.THUMBPRINT }}
           /p:AppxPackageDir="./Packages/" /p:GenerateAppxPackageOnBuild=true
 
       - name: Build the app and generate an unsigned MSIX package
-        if: ${{ env.THUMBPRINT == "" }}
+        if: ${{ env.THUMBPRINT }} == ""
         run:
           msbuild /p:Configuration=${{ matrix.configuration }} /p:Platform=${{ matrix.platform }}
           /p:AppxPackageSigningEnabled=false
