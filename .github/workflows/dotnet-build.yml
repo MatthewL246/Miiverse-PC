@@ -115,7 +115,7 @@ jobs:
       - name: Restore app dependencies
         run: msbuild /t:Restore /p:Configuration=${{ matrix.configuration }} /p:Platform=${{ matrix.platform }}
 
-      - name: Build the app and generate a MSIX package
+      - name: Build the app and generate a signed MSIX package
         if: env.THUMBPRINT != ''
         run:
           msbuild /p:Configuration=${{ matrix.configuration }} /p:Platform=${{ matrix.platform }}
