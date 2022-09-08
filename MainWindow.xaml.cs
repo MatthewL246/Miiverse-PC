@@ -630,15 +630,15 @@ namespace Miiverse_PC
         {
             if (isLoggingIn)
             {
-                loginStatus.Text = "Login status: Logging in...";
+                loginStatus.Text = "Logging in...";
                 loginButton.IsEnabled = false;
             }
             else
             {
                 loginStatus.Text = currentAccount is null
                     || !currentAccount.IsSignedIn
-                    ? "Login status: Not logged in"
-                    : $"Login status: Logged in as \"{currentAccount.PnidUsername}\"";
+                    ? "Not logged in"
+                    : $"Logged in as \"{currentAccount.PnidUsername}\"";
                 loginButton.IsEnabled = true;
             }
         }

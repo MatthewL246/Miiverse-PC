@@ -32,7 +32,7 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock x:Name="loginStatus" Grid.Column="0" VerticalAlignment="Center" FontSize="16" FontWeight="Bold">
-                Login status: Not logged in
+                Not logged in
             </TextBlock>
             <TextBox x:Name="username" Grid.Column="1" Margin="4" KeyDown="MoveToPasswordOnEnter" PlaceholderText="Enter PNID username" />
             <PasswordBox x:Name="password" Grid.Column="2" Margin="4" KeyDown="LoginOnEnter" PlaceholderText="Enter PNID password" />
