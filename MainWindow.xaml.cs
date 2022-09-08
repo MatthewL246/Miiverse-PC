@@ -277,6 +277,7 @@ namespace Miiverse_PC
                 // Use default settings if deserialization returns null
                 storedSettings ??= new();
                 settingsDialog.CurrentSettings = storedSettings;
+                settingsDialog.LoadSettings();
             }
             catch (Exception ex)
             {
