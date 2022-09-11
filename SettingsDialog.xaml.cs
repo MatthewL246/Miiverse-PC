@@ -25,7 +25,9 @@ namespace Miiverse_PC
         {
             accountServer.Text = CurrentSettings.AccountServer;
             discoveryServer.Text = CurrentSettings.DiscoveryServer;
+            isDiscoveryServerSameAsAccountServer.IsChecked = CurrentSettings.IsDiscoveryServerSameAsAccountServer;
             portalServer.Text = CurrentSettings.PortalServer;
+            isDiscoveryServerUsed.IsChecked = CurrentSettings.IsDiscoveryServerUsed;
 
             language.SelectedItem = CurrentSettings.Language;
             country.SelectedItem = CurrentSettings.Country;
@@ -62,7 +64,9 @@ namespace Miiverse_PC
             {
                 AccountServer = accountServer.Text,
                 DiscoveryServer = discoveryServer.Text,
+                IsDiscoveryServerSameAsAccountServer = isDiscoveryServerSameAsAccountServer.IsChecked ?? false,
                 PortalServer = portalServer.Text,
+                IsDiscoveryServerUsed = isDiscoveryServerUsed.IsChecked ?? false,
 
                 Language = (LanguageId)language.SelectedItem,
                 Country = (CountryId)country.SelectedItem,
@@ -89,6 +93,15 @@ namespace Miiverse_PC
                 normalizedServer = "https://" + server;
             }
             return normalizedServer;
+        }
+
+        /// <summary>
+        ///   Handles disabling and enabling text boxes when check boxes are checked.
+        /// </summary>
+        private void SettingsCheckBoxesChecked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+        {
+            discoveryServer.IsEnabled = !(isDiscoveryServerSameAsAccountServer.IsChecked ?? false) && (isDiscoveryServerUsed.IsChecked ?? false);
+            portalServer.IsEnabled = !(isDiscoveryServerUsed.IsChecked ?? false);
         }
     }
 }

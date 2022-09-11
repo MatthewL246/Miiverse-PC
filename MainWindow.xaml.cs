@@ -321,7 +321,7 @@ namespace Miiverse_PC
             {
                 // Hash the password if necessary
                 await currentAccount.HashPnidPasswordAsync();
-                if (currentAccount.PnidPasswordHash is null)
+                if (string.IsNullOrEmpty(currentAccount.PnidPasswordHash))
                 {
                     currentError = "Login failed (password hash)";
                     currentStatus = $"The PNID username {currentAccount.PnidUsername} does not exist on the server.";
@@ -338,7 +338,7 @@ namespace Miiverse_PC
 
                 // Login with OAuth2 token and receive Miiverse service token
                 currentStatus = await currentAccount.CreateMiiverseTokenAsync();
-                if (currentAccount.MiiverseToken is null)
+                if (string.IsNullOrEmpty(currentAccount.MiiverseToken))
                 {
                     currentError = "Login failed (Miiverse service token)";
                     return;
@@ -346,7 +346,7 @@ namespace Miiverse_PC
 
                 // Login with the Miiverse token and receive portal server
                 currentStatus = await currentAccount.GetMiiversePortalServerAsync();
-                if (currentAccount.MiiversePortalServer == "https://")
+                if (string.IsNullOrEmpty(currentAccount.MiiversePortalServer))
                 {
                     currentError = "Login failed (Miiverse portal server)";
                     return;

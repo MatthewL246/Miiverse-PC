@@ -11,6 +11,12 @@
         public string AccountServer { get; init; } = "https://account.pretendo.cc";
 
         /// <summary>
+        ///   If the discovery server uses the same address as the account
+        ///   server. If true, the custom discovery server address is ignored.
+        /// </summary>
+        public bool IsDiscoveryServerSameAsAccountServer { get; init; } = false;
+
+        /// <summary>
         ///   The protocol and domain or IP address of the Miiverse discovery
         ///   server, which responds with the Miiverse portal host. Default:
         ///   Pretendo official server.
@@ -22,6 +28,12 @@
         ///   discovery server. Default: empty (use the discovery server).
         /// </summary>
         public string PortalServer { get; init; } = "";
+
+        /// <summary>
+        ///   If the portal server address should be retrieved from the
+        ///   discovery server. If true, the custom portal server address is ignored.
+        /// </summary>
+        public bool IsDiscoveryServerUsed { get; init; } = true;
 
         /// <summary>
         ///   The language ID sent in the header when loading the Miiverse

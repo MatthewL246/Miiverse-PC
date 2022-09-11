@@ -226,7 +226,7 @@ namespace Miiverse_PC
             {
                 throw new InvalidOperationException("The Miiverse service token does not exist.");
             }
-            if (!string.IsNullOrEmpty(MiiversePortalServer))
+            if (!settings.IsDiscoveryServerUsed)
             {
                 // The portal server was already set by the settings
                 return $"Portal server already set to {MiiversePortalServer}";
