@@ -125,7 +125,7 @@ namespace Miiverse_PC
             }
             catch (Exception ex)
             {
-                await ShowErrorDialogAsync("Failed to delete account data", ex.ToString());
+                await ShowErrorDialogAsync("Failed to delete account data", ex.ToString()).ConfigureAwait(false);
             }
         }
 
@@ -139,7 +139,7 @@ namespace Miiverse_PC
             }
             catch (Exception ex)
             {
-                await ShowErrorDialogAsync("Failed to delete settings data", ex.ToString());
+                await ShowErrorDialogAsync("Failed to delete settings data", ex.ToString()).ConfigureAwait(false);
             }
         }
 
@@ -151,7 +151,7 @@ namespace Miiverse_PC
         {
             if (currentAccount is null || !currentAccount.IsSignedIn)
             {
-                await ShowErrorDialogAsync("Not signed in", "You must be signed in to download user profile data.");
+                await ShowErrorDialogAsync("Not signed in", "You must be signed in to download user profile data.").ConfigureAwait(false);
                 return;
             }
 
@@ -482,7 +482,7 @@ namespace Miiverse_PC
                     (
                         "Invalid Miiverse portal server",
                         $"The Miiverse portal server (${page}) is not a valid URL.\n{ex}"
-                    );
+                    ).ConfigureAwait(false);
                 }
             }
         }
@@ -499,7 +499,7 @@ namespace Miiverse_PC
                 settingsDialog.SaveSettings();
 
                 // Save the settings data as JSON
-                await SaveSettingsDataAsync();
+                await SaveSettingsDataAsync().ConfigureAwait(false);
             }
             else if (result == ContentDialogResult.Secondary)
             {
@@ -519,7 +519,7 @@ namespace Miiverse_PC
                     settingsDialog.ResetSettings();
 
                     // Delete the stored settings data
-                    await DeleteSettingsDataAsync();
+                    await DeleteSettingsDataAsync().ConfigureAwait(false);
                 }
             }
             else
