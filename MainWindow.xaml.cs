@@ -59,9 +59,8 @@ namespace Miiverse_PC
             Title = "Miiverse PC Client";
 
             javascriptCode = ReadJavascriptFile(@"js\portal.js");
-            settingsDialog.LoadSettings();
 
-            // Set up and restore storage
+            // Set up and restore stored data
             try
             {
                 accountDataJsonPath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "accountData.json");
