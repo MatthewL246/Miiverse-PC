@@ -60,6 +60,11 @@ namespace Miiverse_PC
                 }
             }
 
+            if (isDiscoveryServerSameAsAccountServer.IsChecked)
+            {
+                discoveryServer.Text = accountServer.Text;
+            }
+
             CurrentSettings = new()
             {
                 AccountServer = accountServer.Text,
