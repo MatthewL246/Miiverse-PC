@@ -60,7 +60,7 @@ namespace Miiverse_PC
                 }
             }
 
-            if (isDiscoveryServerSameAsAccountServer.IsChecked)
+            if (isDiscoveryServerSameAsAccountServer.IsChecked ?? false)
             {
                 discoveryServer.Text = accountServer.Text;
             }
