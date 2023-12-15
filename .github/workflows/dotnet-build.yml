@@ -52,7 +52,7 @@ jobs:
         run: dotnet publish -p Configuration=${{ matrix.configuration }} -p Platform=${{ matrix.platform }} -v normal
 
       - name: Upload build results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Miiverse-PC Unpackaged Build - ${{ matrix.configuration }} ${{ matrix.platform }} (${{ env.SHORT_SHA }})
           path: ./bin/publish/
@@ -130,7 +130,7 @@ jobs:
           /p:AppxPackageDir="./Packages/" /p:GenerateAppxPackageOnBuild=true
 
       - name: Upload the MSIX package
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Miiverse-PC Package - ${{ matrix.configuration }} ${{ matrix.platform }} (${{ env.SHORT_SHA }})
           path: ./Packages/
