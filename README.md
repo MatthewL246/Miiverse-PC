@@ -2,6 +2,12 @@
 
 This is a Miiverse portal client for PCs, specifically for Pretendo Juxtaposition. It also has some other useful features, such as downloading a Pretendo user's profile data.
 
+## ⚠️ Notice: Unfortunately, this doesn't work anymore.
+
+In the 2 years since I created this, the Pretendo Network account server [added verification checks](https://github.com/PretendoNetwork/account/blob/dev/src/middleware/console-status-verification.ts) that check if the request is coming from a real console or an emulator with a valid console dump.
+
+I might work on fixing this in the future, but passing these checks would require some major changes and make this app require a console dump.
+
 ## Installation
 
 ### Releases
