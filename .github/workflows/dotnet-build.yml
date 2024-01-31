@@ -27,14 +27,14 @@ jobs:
           dotnet-version: 6.0.x
 
       - name: Cache NuGet packages
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
           key: nuget-${{ runner.os }}-${{ matrix.platform }}-${{ hashFiles('**/*.csproj') }}
           restore-keys: nuget-${{ runner.os }}-${{ matrix.platform }}-
 
       - name: Cache build results
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ./bin
@@ -82,14 +82,14 @@ jobs:
         uses: microsoft/setup-msbuild@v1
 
       - name: Cache NuGet packages
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
           key: nuget-${{ runner.os }}-${{ matrix.platform }}-${{ hashFiles('**/*.csproj') }}
           restore-keys: nuget-${{ runner.os }}-${{ matrix.platform }}-
 
       - name: Cache build results
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ./bin
